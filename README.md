@@ -6,14 +6,12 @@ Implementação do portfólio de Gabriel Gonzaga a partir do Figma master.
 
 - Next.js 16.3.5
 - React 19.3
-- TypeScript 6.0.3 strict
+- TypeScript 6 strict
 - Tailwind CSS 4.3 + CSS Variables
 - Motion 13.3
 - MDX
 - Playwright + axe-core
 - Vercel
-
-> TypeScript 6.0.3 é usado nesta etapa porque o toolchain atual do `eslint-config-next` ainda não suporta TypeScript 7.x sem incompatibilidade no `typescript-eslint`.
 
 ## Rotas
 
@@ -44,6 +42,13 @@ O Figma é a fonte visual. A implementação usa uma única estrutura responsiva
 
 Os tokens de cor, spacing e radius do Developer Handoff foram transpostos para `src/app/globals.css`.
 
+## Estado atual
+
+- Homepage implementada a partir do frame Desktop 1440 e adaptada responsivamente.
+- About implementada com conteúdo completo do Figma.
+- Case QuantoLab implementado com narrativa, telas e seções reais.
+- CI valida lint e production build.
+
 ## Assets
 
-Os assets finais devem ser exportados do Figma e versionados em `public/images`. O código não usa URLs temporárias do Figma em produção.
+Os assets visuais utilizados no preview atual vêm dos exports do Figma MCP. Antes de considerar a publicação final estável, eles devem ser versionados em `public/images` para eliminar dependência de URLs temporárias do Figma.

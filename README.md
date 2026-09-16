@@ -52,4 +52,4 @@ Os tokens de cor, spacing e radius do Developer Handoff foram transpostos para `
 
 ## Assets
 
-Os assets visuais utilizados no preview atual vêm dos exports do Figma MCP. Antes de considerar a publicação final estável, eles devem ser versionados em `public/images` para eliminar dependência de URLs temporárias do Figma.
+O preview usa exports temporários do Figma MCP apenas para validação visual. Antes do release estável, esses arquivos devem ser versionados em `public/images` para eliminar a dependência de URLs temporárias.

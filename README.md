@@ -6,12 +6,14 @@ Implementação do portfólio de Gabriel Gonzaga a partir do Figma master.
 
 - Next.js 16.3.5
 - React 19.3
-- TypeScript 7 strict
+- TypeScript 6.0.3 strict
 - Tailwind CSS 4.3 + CSS Variables
 - Motion 13.3
 - MDX
 - Playwright + axe-core
 - Vercel
+
+> TypeScript 6.0.3 é usado nesta etapa porque o toolchain atual do `eslint-config-next` ainda não suporta TypeScript 7.x sem incompatibilidade no `typescript-eslint`.
 
 ## Rotas
 

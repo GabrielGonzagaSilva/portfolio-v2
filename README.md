@@ -48,6 +48,7 @@ Os tokens de cor, spacing e radius do Developer Handoff foram transpostos para `
 - About implementada com conteúdo completo do Figma.
 - Case QuantoLab implementado com narrativa, telas e seções reais.
 - CI valida lint e production build.
+- Etapa atual: paridade visual Figma → código → preview.
 
 ## Assets
 

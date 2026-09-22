@@ -55,6 +55,7 @@ function locationEligibility(j: any) {
 
 function scoreJob(j: any) {
   const hay = norm(` ${j.title} ${j.description || ""} ${(j.tags || []).join(" ")} ${j.location || ""} `);
+  const seniorityHay = norm(` ${j.title} ${(j.tags || []).join(" ")} `);
   let score = 25;
   const reasons: string[] = [];
   let roleMatched = false;
@@ -67,9 +68,9 @@ function scoreJob(j: any) {
     }
   }
 
-  const isEntry = ENTRY.some(k => hay.includes(k));
-  const isMid = MID.some(k => hay.includes(k));
-  const isSenior = SENIOR.some(k => hay.includes(k));
+  const isEntry = ENTRY.some(k => seniorityHay.includes(k));
+  const isMid = MID.some(k => seniorityHay.includes(k));
+  const isSenior = SENIOR.some(k => seniorityHay.includes(k));
   const eligibility = locationEligibility(j);
 
   if (isEntry) { score += 28; reasons.unshift("estágio / júnior"); }

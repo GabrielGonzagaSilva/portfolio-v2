@@ -3,7 +3,7 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UA = "GabrielGonzaga-JobRadar/1.2";
+const UA = "GabrielGonzaga-JobRadar/1.3";
 const strip = (s = "") => String(s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 const norm = (s = "") => strip(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const iso = (v: any) => {
@@ -14,21 +14,15 @@ const iso = (v: any) => {
 const POSITIVE: Array<[string, number]> = [
   ["product designer", 30], ["product design", 24], ["ux designer", 27], ["ui designer", 23], ["ux/ui", 25],
   ["user experience", 19], ["service designer", 22], ["service design", 17], ["design system", 18],
-  ["interaction designer", 21], ["experience designer", 21], ["customer experience", 15], ["cx ", 10],
+  ["interaction designer", 21], ["experience designer", 21], ["customer experience", 15], ["experiencia do cliente", 15],
   ["innovation", 12], ["inovacao", 12], ["artificial intelligence", 9], ["inteligencia artificial", 9],
   ["learning experience", 15], ["lxd", 15], ["instructional design", 13], ["design instrucional", 13],
-  ["digital product", 13], ["produto digital", 13]
+  ["digital product", 13], ["produto digital", 13], ["product", 10], ["produto", 10]
 ];
 
-const ENTRY = [
-  "junior", " jr ", "jr.", "intern", "internship", "estagio", "estagiario", "estagiaria"
-];
-
-const MID = ["mid-level", "mid level", "pleno", "intermediate"];
-const SENIOR = [
-  "senior", " sr ", "sr.", "staff", "lead", "principal", "manager", "gerente", "director", "diretor",
-  "head of", "vice president", " vp ", "coordenador", "coordinator", "supervisor", "specialist", "especialista"
-];
+const ENTRY_RE = /\b(junior|jr\.?|intern|internship|estagio|estagiario|estagiaria)\b/i;
+const MID_RE = /\b(mid-level|mid level|pleno|intermediate)\b/i;
+const SENIOR_RE = /\b(senior|sr\.?|staff|lead|principal|manager|gerente|director|diretor|head|vice president|vp|coordenador|coordinator|supervisor|specialist|especialista)\b/i;
 
 const SP_EXCLUDED = [
   "barueri", "alphaville", "osasco", "guarulhos", "santo andre", "sao bernardo do campo", "sao caetano do sul",
@@ -68,9 +62,9 @@ function scoreJob(j: any) {
     }
   }
 
-  const isEntry = ENTRY.some(k => seniorityHay.includes(k));
-  const isMid = MID.some(k => seniorityHay.includes(k));
-  const isSenior = SENIOR.some(k => seniorityHay.includes(k));
+  const isEntry = ENTRY_RE.test(seniorityHay);
+  const isMid = MID_RE.test(seniorityHay);
+  const isSenior = SENIOR_RE.test(seniorityHay);
   const eligibility = locationEligibility(j);
 
   if (isEntry) { score += 28; reasons.unshift("estágio / júnior"); }
@@ -99,11 +93,50 @@ function scoreJob(j: any) {
 async function getJson(url: string) {
   const r = await fetch(url, {
     headers: { "user-agent": UA, accept: "application/json" },
-    signal: AbortSignal.timeout(9000),
+    signal: AbortSignal.timeout(10000),
     cache: "no-store"
   });
   if (!r.ok) throw new Error(`${r.status} ${url}`);
   return r.json();
+}
+
+async function gupy() {
+  const queries = [
+    "Product Designer", "Product Design", "UX Designer", "UX UI", "UI Designer",
+    "Produto", "Inovação", "Inteligência Artificial", "Customer Experience",
+    "Design Instrucional", "Learning Experience"
+  ];
+
+  const pages = await Promise.allSettled(queries.map(async q => {
+    const url = `https://employability-portal.gupy.io/api/v1/jobs?jobName=${encodeURIComponent(q)}&offset=0&limit=100`;
+    const d: any = await getJson(url);
+    return Array.isArray(d?.data) ? d.data : Array.isArray(d?.results) ? d.results : [];
+  }));
+
+  const byId = new Map<string, any>();
+  for (const p of pages) {
+    if (p.status !== "fulfilled") continue;
+    for (const x of p.value) if (x?.id != null) byId.set(String(x.id), x);
+  }
+
+  return [...byId.values()].map((x: any) => {
+    const workplace = norm(x.workplaceType || "");
+    const remote = workplace === "remote" || workplace.includes("remot") || Boolean(x.isRemoteWork);
+    const location = [x.city, x.state, x.country].filter(Boolean).join(" / ") || (remote ? "Brasil / Remoto" : "Local n/d");
+    return {
+      id: `gupy-${x.id}`,
+      source: "Gupy",
+      title: x.name || x.title || "Vaga sem título",
+      company: x.careerPageName || x.companyName || "Empresa não informada",
+      location,
+      remote,
+      url: x.jobUrl || x.careerPageUrl || "",
+      publishedAt: iso(x.publishedDate || x.createdAt || x.updatedAt),
+      description: strip([x.description, x.responsibilities, x.prerequisites].filter(Boolean).join(" ")),
+      tags: [x.workplaceType, x.jobType, x.type, x.roleName].filter(Boolean),
+      activeValidated: true
+    };
+  });
 }
 
 async function jobicy() {
@@ -120,16 +153,18 @@ async function jobicy() {
 async function remotive() {
   const queries = ["product designer", "ux designer", "ui designer", "innovation", "learning experience", "instructional design"];
   const out: any[] = [];
-  for (const q of queries) {
-    try {
-      const d: any = await getJson(`https://remotive.com/api/remote-jobs?search=${encodeURIComponent(q)}&limit=100`);
-      for (const x of d.jobs || []) out.push({
-        id: `remotive-${x.id}`, source: "Remotive", title: x.title,
-        company: x.company_name || "Empresa não informada", location: x.candidate_required_location || "Remoto", remote: true,
-        url: x.url, publishedAt: iso(x.publication_date), description: strip(x.description),
-        tags: [x.category, x.job_type, ...(x.tags || [])].filter(Boolean), activeValidated: true
-      });
-    } catch { /* fonte parcial não derruba o radar */ }
+  const pages = await Promise.allSettled(queries.map(async q => {
+    const d: any = await getJson(`https://remotive.com/api/remote-jobs?search=${encodeURIComponent(q)}&limit=100`);
+    return d.jobs || [];
+  }));
+  for (const p of pages) {
+    if (p.status !== "fulfilled") continue;
+    for (const x of p.value) out.push({
+      id: `remotive-${x.id}`, source: "Remotive", title: x.title,
+      company: x.company_name || "Empresa não informada", location: x.candidate_required_location || "Remoto", remote: true,
+      url: x.url, publishedAt: iso(x.publication_date), description: strip(x.description),
+      tags: [x.category, x.job_type, ...(x.tags || [])].filter(Boolean), activeValidated: true
+    });
   }
   return out;
 }
@@ -169,7 +204,7 @@ function dedupe(items: any[]) {
 export async function GET(request: Request) {
   const refresh = new URL(request.url).searchParams.has("refresh");
   const sources: Array<[string, () => Promise<any[]>]> = [
-    ["Jobicy", jobicy], ["Remotive", remotive], ["Arbeitnow", arbeitnow], ["RemoteOK", remoteok]
+    ["Gupy", gupy], ["Jobicy", jobicy], ["Remotive", remotive], ["Arbeitnow", arbeitnow], ["RemoteOK", remoteok]
   ];
   const settled = await Promise.allSettled(sources.map(([, fn]) => fn()));
   let jobs: any[] = [];

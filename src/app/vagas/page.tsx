@@ -6,18 +6,20 @@ type Job = {
   id: string; source: string; title: string; company: string; location: string; remote: boolean;
   url: string; publishedAt?: string | null; description?: string; tags?: string[]; score: number;
   reasons?: string[]; level: "entry" | "mid" | "senior" | "unknown"; activeValidated?: boolean;
+  locationGroup?: "São Paulo · SP" | "Brasil · remoto" | "Portugal · remoto" | null;
 };
 
 type ApiData = {
-  meta?: { generatedAt?: string; sources?: Record<string, { ok: boolean; count?: number; error?: string }> };
+  meta?: { generatedAt?: string; criteria?: string; sources?: Record<string, { ok: boolean; count?: number; error?: string }> };
   jobs?: Job[];
 };
 
 const quickLinks = [
-  ["LinkedIn", "https://www.linkedin.com/jobs/search/?keywords=Product%20Designer%20Junior&location=S%C3%A3o%20Paulo%2C%20Brazil"],
-  ["Gupy", "https://portal.gupy.io/job-search/term=product%20designer"],
-  ["Indeed", "https://br.indeed.com/jobs?q=product+designer+junior&l=S%C3%A3o+Paulo%2C+SP"],
-  ["Glassdoor", "https://www.glassdoor.com.br/Vaga/s%C3%A3o-paulo-product-designer-vagas-SRCH_IL.0,9_IC2479061_KO10,26.htm"],
+  ["LinkedIn · São Paulo", "https://www.linkedin.com/jobs/search/?keywords=Product%20Designer%20Junior%20OR%20UX%20Designer%20Junior%20OR%20Intern&location=S%C3%A3o%20Paulo%2C%20Brazil"],
+  ["LinkedIn · remoto Brasil", "https://www.linkedin.com/jobs/search/?keywords=Product%20Designer%20Junior%20OR%20UX%20Designer%20Junior%20OR%20Intern&location=Brazil&f_WT=2"],
+  ["LinkedIn · remoto Portugal", "https://www.linkedin.com/jobs/search/?keywords=Product%20Designer%20Junior%20OR%20UX%20Designer%20Junior%20OR%20Intern&location=Portugal&f_WT=2"],
+  ["Gupy · estágio / júnior", "https://portal.gupy.io/job-search/term=product%20designer%20junior"],
+  ["Indeed · São Paulo", "https://br.indeed.com/jobs?q=%28product+designer+junior+OR+ux+designer+junior+OR+estagio+ux%29&l=S%C3%A3o+Paulo%2C+SP"],
 ];
 
 function fmtDate(value?: string | null) {
@@ -33,7 +35,7 @@ export default function VagasPage() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [score, setScore] = useState(70);
-  const [level, setLevel] = useState("entry");
+  const [group, setGroup] = useState("all");
   const [mode, setMode] = useState("all");
   const [source, setSource] = useState("all");
 
@@ -64,11 +66,11 @@ export default function VagasPage() {
     return jobs.filter(j =>
       j.score >= score &&
       (source === "all" || j.source === source) &&
+      (group === "all" || j.locationGroup === group) &&
       (mode !== "remote" || j.remote) &&
-      (level === "all" || j.level === level) &&
       (!q || `${j.title} ${j.company} ${j.location} ${(j.tags || []).join(" ")}`.toLowerCase().includes(q))
     );
-  }, [jobs, query, score, source, mode, level]);
+  }, [jobs, query, score, source, group, mode]);
 
   const activeSources = data.meta?.sources ? Object.values(data.meta.sources).filter(x => x.ok).length : new Set(jobs.map(j => j.source)).size;
   const updated = data.meta?.generatedAt ? new Date(data.meta.generatedAt).toLocaleString("pt-BR") : "—";
@@ -98,8 +100,8 @@ export default function VagasPage() {
         <header className="rhead">
           <div>
             <div className="reyebrow">Radar pessoal de oportunidades</div>
-            <h1 className="rtitle">Vagas com mais aderência ao seu próximo passo.</h1>
-            <p className="rsub">Product Design, UX/UI, Produto Digital, Inovação, IA aplicada, CX e LXD — priorizando estágio e posições júnior, com contexto Brasil/LATAM/remoto.</p>
+            <h1 className="rtitle">Estágio e júnior, sem ruído de senioridade ou localização.</h1>
+            <p className="rsub">Product Design, UX/UI, Produto Digital, Inovação, IA aplicada, CX e LXD. O radar aceita apenas São Paulo/SP presencial ou híbrido e vagas remotas com elegibilidade explícita para Brasil ou Portugal.</p>
           </div>
           <div className="rstatus">
             <strong><span className="pulse" />Automação ativa · 4 buscas/dia</strong>
@@ -108,17 +110,17 @@ export default function VagasPage() {
         </header>
 
         <section className="metrics">
-          <div className="metric"><b>{jobs.length}</b><span>vagas aderentes</span></div>
+          <div className="metric"><b>{jobs.length}</b><span>vagas válidas</span></div>
           <div className="metric"><b>{jobs.filter(j => j.score >= 70).length}</b><span>match ≥ 70</span></div>
-          <div className="metric"><b>{jobs.filter(j => j.level === "entry").length}</b><span>estágio / júnior</span></div>
-          <div className="metric"><b>{activeSources}</b><span>fontes ativas</span></div>
+          <div className="metric"><b>{jobs.filter(j => j.locationGroup === "São Paulo · SP").length}</b><span>São Paulo / SP</span></div>
+          <div className="metric"><b>{jobs.filter(j => j.locationGroup?.includes("remoto")).length}</b><span>remotas BR / PT</span></div>
         </section>
 
         <section className="toolbar">
           <input className="control search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar cargo, empresa, skill…" />
           <select className="control" value={score} onChange={e => setScore(Number(e.target.value))}><option value={0}>Qualquer match</option><option value={60}>Match ≥ 60</option><option value={70}>Match ≥ 70</option><option value={80}>Match ≥ 80</option></select>
-          <select className="control" value={level} onChange={e => setLevel(e.target.value)}><option value="all">Todos os níveis</option><option value="entry">Estágio / Júnior</option><option value="mid">Pleno</option></select>
-          <select className="control" value={mode} onChange={e => setMode(e.target.value)}><option value="all">Remoto + presencial</option><option value="remote">Somente remoto</option></select>
+          <select className="control" value={group} onChange={e => setGroup(e.target.value)}><option value="all">SP + remoto BR/PT</option><option value="São Paulo · SP">São Paulo / SP</option><option value="Brasil · remoto">Brasil · remoto</option><option value="Portugal · remoto">Portugal · remoto</option></select>
+          <select className="control" value={mode} onChange={e => setMode(e.target.value)}><option value="all">Todos os modelos</option><option value="remote">Somente remoto</option></select>
           <select className="control" value={source} onChange={e => setSource(e.target.value)}><option value="all">Todas as fontes</option>{sources.map(s => <option key={s}>{s}</option>)}</select>
           <button className="rbtn" disabled={loading} onClick={() => load(true)}>{loading ? "Buscando…" : "Atualizar"}</button>
         </section>
@@ -126,15 +128,15 @@ export default function VagasPage() {
         <div className="layout">
           <section className="jobs">
             {error && <div className="state">Não foi possível atualizar agora: {error}</div>}
-            {!error && loading && jobs.length === 0 && <div className="state">Buscando vagas nas fontes conectadas…</div>}
-            {!loading && !error && filtered.length === 0 && <div className="state">Nenhuma vaga corresponde aos filtros atuais. Reduza o match mínimo ou amplie o nível.</div>}
+            {!error && loading && jobs.length === 0 && <div className="state">Buscando vagas de estágio e júnior nos recortes permitidos…</div>}
+            {!loading && !error && filtered.length === 0 && <div className="state">Nenhuma vaga atende aos critérios atuais. O radar não amplia senioridade nem localização para preencher a lista.</div>}
             {filtered.map(j => (
               <article className="job" key={j.id}>
                 <div className="jobtop">
                   <div><div className="company">{j.company} · {j.source}</div><h2>{j.title}</h2></div>
                   <div className="score"><b>{j.score}</b><small>match</small></div>
                 </div>
-                <div className="pills"><span className="pill">{j.location || "Local n/d"}</span>{j.remote && <span className="pill good">Remoto</span>}<span className="pill">{fmtDate(j.publishedAt)}</span>{j.activeValidated && <span className="pill good">Fonte ativa</span>}</div>
+                <div className="pills"><span className="pill">{j.location || "Local n/d"}</span>{j.locationGroup && <span className="pill good">{j.locationGroup}</span>}<span className="pill good">Estágio / Júnior</span><span className="pill">{fmtDate(j.publishedAt)}</span>{j.activeValidated && <span className="pill good">Fonte ativa</span>}</div>
                 {!!j.tags?.length && <div className="pills">{j.tags.slice(0, 6).map((t, i) => <span className="pill" key={`${t}-${i}`}>{t}</span>)}</div>}
                 {!!j.reasons?.length && <div className="reasons">{j.reasons.slice(0, 4).map(r => <span className="reason" key={r}>{r}</span>)}</div>}
                 <div className="actions"><a className="apply" href={j.url} target="_blank" rel="noopener noreferrer">Ver vaga ↗</a></div>
@@ -144,13 +146,13 @@ export default function VagasPage() {
           </section>
 
           <aside className="sidecol">
-            <div className="side"><h3>Buscas complementares</h3><p>Atalhos para plataformas cujo catálogo completo não possui API pública universal adequada ao agregador.</p><div className="quick">{quickLinks.map(([name, href]) => <a key={name} href={href} target="_blank" rel="noopener noreferrer">{name}<span>↗</span></a>)}</div></div>
-            <div className="side"><h3>Como o match é calculado</h3><div className="legend"><span><b>+ Cargo:</b> Product/UX/UI/Service Design, CX, Inovação, IA e LXD.</span><span><b>+ Senioridade:</b> estágio, intern, trainee, associate, junior e entry level.</span><span><b>+ Contexto:</b> Brasil, São Paulo, LATAM, worldwide ou remoto.</span><span><b>− Penalidade:</b> senior, staff, lead, principal, manager, head ou director.</span><span><b>− Descarte:</b> vagas sem relação com seu perfil ou com mais de 90 dias.</span></div></div>
+            <div className="side"><h3>Buscas complementares</h3><p>Atalhos já orientados para estágio/júnior em São Paulo ou remoto Brasil/Portugal.</p><div className="quick">{quickLinks.map(([name, href]) => <a key={name} href={href} target="_blank" rel="noopener noreferrer">{name}<span>↗</span></a>)}</div></div>
+            <div className="side"><h3>Critérios obrigatórios</h3><div className="legend"><span><b>Senioridade:</b> somente estágio/intern ou júnior/junior.</span><span><b>São Paulo:</b> presencial ou híbrido apenas em São Paulo/SP.</span><span><b>Brasil remoto:</b> precisa indicar elegibilidade para candidatos no Brasil.</span><span><b>Portugal remoto:</b> precisa indicar elegibilidade para candidatos em Portugal.</span><span><b>Excluídas:</b> pleno, sênior, staff, lead, principal, manager, coordenação, head e direção.</span><span><b>Geografia excluída:</b> worldwide, LATAM ou outros países quando Brasil/Portugal não estiverem explicitamente aceitos.</span></div></div>
             <div className="side"><h3>Fontes automatizadas</h3><p>{data.meta?.sources ? Object.entries(data.meta.sources).map(([k, v]) => `${k}: ${v.ok ? "online" : "indisponível"}`).join(" · ") : "Jobicy · Remotive · Arbeitnow · RemoteOK"}</p></div>
           </aside>
         </div>
 
-        <div className="footer">Painel pessoal de curadoria. A disponibilidade final deve ser confirmada na página oficial antes da candidatura.</div>
+        <div className="footer">Filtro rígido: somente estágio/júnior nos recortes de São Paulo/SP ou remoto Brasil/Portugal. A disponibilidade final da candidatura deve ser confirmada na página oficial.</div>
       </div>
     </main>
   );

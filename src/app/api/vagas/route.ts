@@ -3,8 +3,9 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UA = "GabrielGonzaga-JobRadar/1.1";
+const UA = "GabrielGonzaga-JobRadar/1.2";
 const strip = (s = "") => String(s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+const norm = (s = "") => strip(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const iso = (v: any) => {
   const d = new Date(v);
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
@@ -14,17 +15,46 @@ const POSITIVE: Array<[string, number]> = [
   ["product designer", 30], ["product design", 24], ["ux designer", 27], ["ui designer", 23], ["ux/ui", 25],
   ["user experience", 19], ["service designer", 22], ["service design", 17], ["design system", 18],
   ["interaction designer", 21], ["experience designer", 21], ["customer experience", 15], ["cx ", 10],
-  ["innovation", 12], ["inovação", 12], ["artificial intelligence", 9], ["inteligência artificial", 9],
+  ["innovation", 12], ["inovacao", 12], ["artificial intelligence", 9], ["inteligencia artificial", 9],
   ["learning experience", 15], ["lxd", 15], ["instructional design", 13], ["design instrucional", 13],
   ["digital product", 13], ["produto digital", 13]
 ];
-const ENTRY = ["junior", "júnior", " jr ", "intern", "internship", "estágio", "estagio", "trainee", "associate", "entry level", "entry-level", "graduate"];
+
+const ENTRY = [
+  "junior", " jr ", "jr.", "intern", "internship", "estagio", "estagiario", "estagiaria"
+];
+
 const MID = ["mid-level", "mid level", "pleno", "intermediate"];
-const SENIOR = ["senior", "sênior", " sr ", "staff", "lead", "principal", "manager", "gerente", "director", "diretor", "head of", "vice president", " vp "];
-const LOCATION_OK = ["brazil", "brasil", "são paulo", "sao paulo", "latam", "latin america", "south america", "worldwide", "anywhere", "global", "remote"];
+const SENIOR = [
+  "senior", " sr ", "sr.", "staff", "lead", "principal", "manager", "gerente", "director", "diretor",
+  "head of", "vice president", " vp ", "coordenador", "coordinator", "supervisor", "specialist", "especialista"
+];
+
+const SP_EXCLUDED = [
+  "barueri", "alphaville", "osasco", "guarulhos", "santo andre", "sao bernardo do campo", "sao caetano do sul",
+  "diadema", "taboao da serra", "cotia", "mogi das cruzes", "campinas", "jundiai", "sorocaba", "santos"
+];
+
+function locationEligibility(j: any) {
+  const loc = norm(j.location || "");
+  const hasBrazil = /\b(brasil|brazil)\b/.test(loc);
+  const hasPortugal = /\bportugal\b/.test(loc);
+  const excludedSpCity = SP_EXCLUDED.some(city => loc.includes(city));
+  const isSaoPaulo = !excludedSpCity && (
+    loc.includes("sao paulo") || loc.includes("sp, brazil") || loc.includes("sp, brasil") || loc === "sp"
+  );
+  const isRemote = Boolean(j.remote) || loc.includes("remote") || loc.includes("remoto");
+
+  if (!isRemote && isSaoPaulo) return { ok: true, group: "São Paulo · SP", reason: "São Paulo / SP" };
+  if (isRemote && hasBrazil) return { ok: true, group: "Brasil · remoto", reason: "remoto para o Brasil" };
+  if (isRemote && hasPortugal) return { ok: true, group: "Portugal · remoto", reason: "remoto para Portugal" };
+  if (isRemote && isSaoPaulo) return { ok: true, group: "São Paulo · SP", reason: "remoto em São Paulo / SP" };
+
+  return { ok: false, group: null, reason: null };
+}
 
 function scoreJob(j: any) {
-  const hay = ` ${j.title} ${j.description || ""} ${(j.tags || []).join(" ")} ${j.location || ""} `.toLowerCase();
+  const hay = norm(` ${j.title} ${j.description || ""} ${(j.tags || []).join(" ")} ${j.location || ""} `);
   let score = 25;
   const reasons: string[] = [];
   let roleMatched = false;
@@ -40,12 +70,12 @@ function scoreJob(j: any) {
   const isEntry = ENTRY.some(k => hay.includes(k));
   const isMid = MID.some(k => hay.includes(k));
   const isSenior = SENIOR.some(k => hay.includes(k));
+  const eligibility = locationEligibility(j);
 
-  if (isEntry) { score += 25; reasons.unshift("senioridade compatível"); }
-  else if (isMid) score += 3;
-  if (isSenior) { score -= 48; reasons.push("senioridade acima do alvo"); }
-  if (j.remote) { score += 9; reasons.push("remoto"); }
-  if (LOCATION_OK.some(k => String(j.location || "").toLowerCase().includes(k))) { score += 8; reasons.push("localização compatível"); }
+  if (isEntry) { score += 28; reasons.unshift("estágio / júnior"); }
+  if (isMid || isSenior) score -= 55;
+  if (eligibility.ok) { score += 10; reasons.push(eligibility.reason as string); }
+  if (j.remote) score += 4;
 
   if (j.publishedAt) {
     const age = (Date.now() - new Date(j.publishedAt).getTime()) / 86400000;
@@ -59,7 +89,9 @@ function scoreJob(j: any) {
     score: Math.max(0, Math.min(100, score)),
     roleMatched,
     reasons: [...new Set(reasons)],
-    level: isEntry ? "entry" : isMid ? "mid" : isSenior ? "senior" : "unknown"
+    level: isEntry && !isMid && !isSenior ? "entry" : isMid ? "mid" : isSenior ? "senior" : "unknown",
+    locationEligible: eligibility.ok,
+    locationGroup: eligibility.group
   };
 }
 
@@ -85,7 +117,7 @@ async function jobicy() {
 }
 
 async function remotive() {
-  const queries = ["product designer", "ux designer", "innovation", "learning experience"];
+  const queries = ["product designer", "ux designer", "ui designer", "innovation", "learning experience", "instructional design"];
   const out: any[] = [];
   for (const q of queries) {
     try {
@@ -152,13 +184,22 @@ export async function GET(request: Request) {
 
   jobs = dedupe(jobs)
     .map(scoreJob)
-    .filter(j => j.url && j.title && j.company && j.roleMatched && j.score >= 30)
+    .filter(j => j.url && j.title && j.company && j.roleMatched)
+    .filter(j => j.level === "entry" && j.locationEligible)
+    .filter(j => j.score >= 30)
     .filter(j => !j.publishedAt || (Date.now() - new Date(j.publishedAt).getTime()) / 86400000 <= 90)
     .sort((a, b) => b.score - a.score || +new Date(b.publishedAt || 0) - +new Date(a.publishedAt || 0))
     .slice(0, 350)
-    .map(({ roleMatched, ...j }) => j);
+    .map(({ roleMatched, locationEligible, ...j }) => j);
 
-  return Response.json({ meta: { generatedAt: new Date().toISOString(), sources: status }, jobs }, {
+  return Response.json({
+    meta: {
+      generatedAt: new Date().toISOString(),
+      sources: status,
+      criteria: "Somente estágio/júnior; São Paulo/SP presencial ou híbrido; remoto com elegibilidade explícita para Brasil ou Portugal."
+    },
+    jobs
+  }, {
     headers: { "Cache-Control": refresh ? "no-store" : "public, s-maxage=7200, stale-while-revalidate=21600" }
   });
 }

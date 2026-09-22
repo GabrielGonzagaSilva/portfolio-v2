@@ -3,7 +3,7 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UA = "GabrielGonzaga-JobRadar/1.3";
+const UA = "GabrielGonzaga-JobRadar/1.4";
 const strip = (s = "") => String(s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 const norm = (s = "") => strip(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const iso = (v: any) => {
@@ -12,7 +12,7 @@ const iso = (v: any) => {
 };
 
 const POSITIVE: Array<[string, number]> = [
-  ["product designer", 30], ["product design", 24], ["ux designer", 27], ["ui designer", 23], ["ux/ui", 25],
+  ["product designer", 30], ["product design", 24], ["ux designer", 27], ["ui designer", 23], ["ux/ui", 25], ["ui/ux", 25],
   ["user experience", 19], ["service designer", 22], ["service design", 17], ["design system", 18],
   ["interaction designer", 21], ["experience designer", 21], ["customer experience", 15], ["experiencia do cliente", 15],
   ["innovation", 12], ["inovacao", 12], ["artificial intelligence", 9], ["inteligencia artificial", 9],
@@ -23,45 +23,41 @@ const POSITIVE: Array<[string, number]> = [
 const ENTRY_RE = /\b(junior|jr\.?|intern|internship|estagio|estagiario|estagiaria)\b/i;
 const MID_RE = /\b(mid-level|mid level|pleno|intermediate)\b/i;
 const SENIOR_RE = /\b(senior|sr\.?|staff|lead|principal|manager|gerente|director|diretor|head|vice president|vp|coordenador|coordinator|supervisor|specialist|especialista)\b/i;
-
-const SP_EXCLUDED = [
-  "barueri", "alphaville", "osasco", "guarulhos", "santo andre", "sao bernardo do campo", "sao caetano do sul",
-  "diadema", "taboao da serra", "cotia", "mogi das cruzes", "campinas", "jundiai", "sorocaba", "santos"
-];
+const ROLE_TITLE_RE = /(product designer|product design|ux\/?ui|ui\/?ux|ux designer|ui designer|user experience|service designer|experience designer|customer experience|experiencia do cliente|\bcx\b|innovation|inovacao|artificial intelligence|inteligencia artificial|learning experience|\blxd\b|instructional design|design instrucional|digital product|produto digital)/i;
 
 function locationEligibility(j: any) {
   const loc = norm(j.location || "");
-  const hasBrazil = /\b(brasil|brazil)\b/.test(loc);
-  const hasPortugal = /\bportugal\b/.test(loc);
-  const excludedSpCity = SP_EXCLUDED.some(city => loc.includes(city));
-  const isSaoPaulo = !excludedSpCity && (
-    loc.includes("sao paulo") || loc.includes("sp, brazil") || loc.includes("sp, brasil") || loc === "sp"
-  );
+  const city = norm(j.city || "");
+  const hasBrazil = /\b(brasil|brazil)\b/.test(loc) || /\b(brasil|brazil)\b/.test(norm(j.country || ""));
+  const hasPortugal = /\bportugal\b/.test(loc) || /\bportugal\b/.test(norm(j.country || ""));
+  const isSaoPauloCity = city
+    ? city === "sao paulo"
+    : /^sao paulo(?:\s*[,/|-]|\s*$)/.test(loc);
   const isRemote = Boolean(j.remote) || loc.includes("remote") || loc.includes("remoto");
 
-  if (!isRemote && isSaoPaulo) return { ok: true, group: "São Paulo · SP", reason: "São Paulo / SP" };
+  if (!isRemote && isSaoPauloCity) return { ok: true, group: "São Paulo · SP", reason: "São Paulo / SP" };
   if (isRemote && hasBrazil) return { ok: true, group: "Brasil · remoto", reason: "remoto para o Brasil" };
   if (isRemote && hasPortugal) return { ok: true, group: "Portugal · remoto", reason: "remoto para Portugal" };
-  if (isRemote && isSaoPaulo) return { ok: true, group: "São Paulo · SP", reason: "remoto em São Paulo / SP" };
+  if (isRemote && isSaoPauloCity) return { ok: true, group: "São Paulo · SP", reason: "remoto em São Paulo / SP" };
 
   return { ok: false, group: null, reason: null };
 }
 
 function scoreJob(j: any) {
+  const titleHay = norm(j.title || "");
   const hay = norm(` ${j.title} ${j.description || ""} ${(j.tags || []).join(" ")} ${j.location || ""} `);
   const seniorityHay = norm(` ${j.title} ${(j.tags || []).join(" ")} `);
   let score = 25;
   const reasons: string[] = [];
-  let roleMatched = false;
 
   for (const [k, w] of POSITIVE) {
     if (hay.includes(k)) {
-      roleMatched = true;
       score += w;
       if (reasons.length < 4) reasons.push(k);
     }
   }
 
+  const roleMatched = ROLE_TITLE_RE.test(titleHay);
   const isEntry = ENTRY_RE.test(seniorityHay);
   const isMid = MID_RE.test(seniorityHay);
   const isSenior = SENIOR_RE.test(seniorityHay);
@@ -103,7 +99,7 @@ async function getJson(url: string) {
 async function gupy() {
   const queries = [
     "Product Designer", "Product Design", "UX Designer", "UX UI", "UI Designer",
-    "Produto", "Inovação", "Inteligência Artificial", "Customer Experience",
+    "Produto Digital", "Inovação", "Inteligência Artificial", "Customer Experience",
     "Design Instrucional", "Learning Experience"
   ];
 
@@ -122,13 +118,19 @@ async function gupy() {
   return [...byId.values()].map((x: any) => {
     const workplace = norm(x.workplaceType || "");
     const remote = workplace === "remote" || workplace.includes("remot") || Boolean(x.isRemoteWork);
-    const location = [x.city, x.state, x.country].filter(Boolean).join(" / ") || (remote ? "Brasil / Remoto" : "Local n/d");
+    const city = x.city || "";
+    const state = x.state || "";
+    const country = x.country || "";
+    const location = [city, state, country].filter(Boolean).join(" / ") || (remote ? "Brasil / Remoto" : "Local n/d");
     return {
       id: `gupy-${x.id}`,
       source: "Gupy",
       title: x.name || x.title || "Vaga sem título",
       company: x.careerPageName || x.companyName || "Empresa não informada",
       location,
+      city,
+      state,
+      country,
       remote,
       url: x.jobUrl || x.careerPageUrl || "",
       publishedAt: iso(x.publishedDate || x.createdAt || x.updatedAt),
@@ -232,10 +234,10 @@ export async function GET(request: Request) {
     meta: {
       generatedAt: new Date().toISOString(),
       sources: status,
-      criteria: "Somente estágio/júnior; São Paulo/SP presencial ou híbrido; remoto com elegibilidade explícita para Brasil ou Portugal."
+      criteria: "Somente estágio/júnior; presencial ou híbrido somente em São Paulo capital; remoto apenas Brasil ou Portugal."
     },
     jobs
   }, {
-    headers: { "Cache-Control": refresh ? "no-store" : "public, s-maxage=7200, stale-while-revalidate=21600" }
+    headers: { "Cache-Control": refresh ? "no-store" : "public, s-maxage=900, stale-while-revalidate=1800" }
   });
 }

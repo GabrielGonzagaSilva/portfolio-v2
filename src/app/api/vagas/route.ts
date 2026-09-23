@@ -3,7 +3,7 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UA = "GabrielGonzaga-JobRadar/2.0";
+const UA = "GabrielGonzaga-JobRadar/2.1";
 const strip = (s = "") => String(s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 const norm = (s = "") => strip(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const iso = (v: any) => {
@@ -11,13 +11,7 @@ const iso = (v: any) => {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 };
 
-/*
- * Perfil-alvo derivado do currículo 2026 do Gabriel:
- * - objetivo: estágio/júnior em Produto Digital, Product Design, CX ou Inovação;
- * - competências: UX/UI, pesquisa, IA aplicada, governança/produtização de IA,
- *   LXD, Design Instrucional, Design Systems, prototipação, fluxos e documentação;
- * - formação atual: Design Gráfico em andamento, conclusão prevista para dez/2027.
- */
+/* Perfil-alvo: currículo Gabriel Gonzaga 2026 */
 const ENTRY_RE = /\b(junior|jr\.?|intern|internship|estagio|estagiario|estagiaria)\b/i;
 const MID_RE = /\b(mid-level|mid level|pleno|intermediate)\b/i;
 const SENIOR_RE = /\b(senior|sr\.?|staff|lead|principal|manager|gerente|director|diretor|head|vice president|vp|coordenador|coordinator|supervisor|specialist|especialista)\b/i;
@@ -31,7 +25,7 @@ const TRACKS: Array<{ label: string; re: RegExp; base: number }> = [
   { label: "LXD / Design Instrucional", re: /(learning experience|\blxd\b|instructional design|design instrucional|aprendizagem corporativa)/i, base: 36 }
 ];
 
-const HARD_EXCLUDE_TITLE_RE = /(product marketing|marketing de produto|desenvolvimento de produto|qualidade de produto|analista de sistemas|systems analyst|software|developer|desenvolvedor|engenheiro|engineer|data scientist|cientista de dados|machine learning engineer|contabilidade|accounting|farmacia|quimica|biomedicina|laboratorio|construcao civil|arquitetura|customer support|suporte ao cliente|suporte tecnico|technical support|vendas|sales)/i;
+const HARD_EXCLUDE_TITLE_RE = /(product marketing|marketing de produto|desenvolvimento de produto|qualidade de produto|analista de sistemas|systems analyst|software engineer|software developer|developer|desenvolvedor|engenheiro|engineer|data scientist|cientista de dados|machine learning engineer|contabilidade|accounting|farmacia|quimica|biomedicina|laboratorio|construcao civil|arquitetura|customer support|suporte ao cliente|suporte tecnico|technical support|vendas|sales)/i;
 
 const PROFILE_SKILLS: Array<[RegExp, string, number]> = [
   [/(figma|wireframe|prototip|design system|interface|ux\/ui|ui\/ux)/i, "UX/UI e prototipação", 8],
@@ -45,16 +39,19 @@ const PROFILE_SKILLS: Array<[RegExp, string, number]> = [
 ];
 
 const CX_EVIDENCE_RE = /(pesquisa|research|jornada|journey|nps|csat|insight|feedback|customer centric|experiencia|experience|usuario|user|design|crm|comportamento)/i;
-const INNOVATION_EVIDENCE_RE = /(produto|product|digital|design|ux|usuario|user|inteligencia artificial|artificial intelligence|ia generativa|prompt|automacao|automation|pesquisa|research|prototip|learning|aprendizagem|processo)/i;
+const PRODUCT_DIGITAL_EVIDENCE_RE = /(produto digital|digital product|plataforma digital|aplicativo|\bapp\b|ux|usuario|user|discovery|roadmap|squad|figma|prototip|interface|saas|web product|software product)/i;
+const NON_DIGITAL_PRODUCT_CONTEXT_RE = /(urbanistic|urbanism|urbanismo|arquitet|construcao|imobiliari|loteamento|terreno|masterplan|engenharia civil|manufatura|industrial|farmaceut|laboratorio)/i;
+const INNOVATION_EVIDENCE_RE = /(produto digital|digital product|design|ux|usuario|user|inteligencia artificial|artificial intelligence|ia generativa|prompt|automacao|automation|pesquisa|research|prototip|learning|aprendizagem|processo|plataforma digital)/i;
 const AI_APPLIED_EVIDENCE_RE = /(ia generativa|generative ai|chatgpt|copilot|prompt|governanca|governance|produtizacao|automacao|automation|processo|produto|product|innovation|inovacao|workflow|agente de ia|ai agent)/i;
 const LXD_EVIDENCE_RE = /(aprendizagem|learning|treinamento|training|conteudo|content|roteiro|storyboard|ava|lms|experiencia de aprendizagem|learning experience|educacao corporativa)/i;
 
-const ACADEMIC_COMPATIBLE_RE = /(design|design grafico|design digital|comunicacao|publicidade|marketing|produto|experiencia do usuario|ux|areas correlatas|area correlata|formacao correlata)/i;
-const SPECIFIC_DEGREE_RE = /(ciencias contabeis|contabilidade|farmacia|quimica|biologia|biomedicina|engenharia quimica|engenharia civil|arquitetura|ciencia da computacao|ciencias da computacao|engenharia da computacao|sistemas de informacao|analise de sistemas|pedagogia|licenciatura)/i;
+const ACADEMIC_COMPATIBLE_RE = /(design grafico|design digital|\bdesign\b|comunicacao|publicidade|marketing|areas correlatas|area correlata|formacao correlata)/i;
+const SPECIFIC_DEGREE_RE = /(ciencias contabeis|contabilidade|farmacia|quimica|biologia|biomedicina|engenharia quimica|engenharia civil|arquitetura|ciencia da computacao|ciencias da computacao|engenharia da computacao|sistemas de informacao|analise de sistemas|inteligencia artificial|automacao|pedagogia|licenciatura)/i;
 const ACADEMIC_REQUIREMENT_RE = /(ensino superior|graduacao|formacao academica|cursando|estudante de)/i;
 const COMPLETED_DEGREE_RE = /(ensino superior completo|superior completo|graduacao completa|formacao superior completa)/i;
-const CURRENT_STUDY_OK_RE = /(cursando ou completo|cursando\/completo|superior cursando|graduacao em andamento|cursando ensino superior|estudante)/i;
+const CURRENT_STUDY_OK_RE = /(cursando ou completo|cursando\/completo|superior cursando|graduacao em andamento|cursando ensino superior)/i;
 const EXCESSIVE_EXP_RE = /(?:3|4|5|6|7|8|9|10)\+?\s*anos?[^.]{0,80}(experiencia|atuacao)|(?:experiencia|atuacao)[^.]{0,80}(?:3|4|5|6|7|8|9|10)\+?\s*anos?/i;
+const HEAVY_TECH_TERMS = [/\bpython\b/i, /\bjava\b/i, /javascript|\bjs\b/i, /\breact\b/i, /\bsql\b/i, /\baws\b/i, /\bgcp\b/i, /\bazure\b/i, /tensorflow|pytorch/i, /machine learning/i, /elasticsearch|kibana|grafana/i];
 
 function locationEligibility(j: any) {
   const loc = norm(j.location || "");
@@ -80,21 +77,26 @@ function profileCompatibility(j: any) {
   if (!track) return { ok: false, reason: "cargo fora do objetivo do currículo" };
   if (HARD_EXCLUDE_TITLE_RE.test(title)) return { ok: false, reason: "especialidade fora do perfil" };
 
+  if (track.label === "Produto Digital") {
+    if (NON_DIGITAL_PRODUCT_CONTEXT_RE.test(description) || !PRODUCT_DIGITAL_EVIDENCE_RE.test(description)) {
+      return { ok: false, reason: "produto não digital ou sem evidência de produto digital" };
+    }
+  }
   if (track.label === "Experiência do Cliente / CX" && !CX_EVIDENCE_RE.test(description)) {
     return { ok: false, reason: "CX sem aderência a pesquisa/jornada/experiência" };
   }
   if (track.label === "Inovação" && !INNOVATION_EVIDENCE_RE.test(description)) {
-    return { ok: false, reason: "inovação sem conexão com design/produto/IA/aprendizagem" };
+    return { ok: false, reason: "inovação sem conexão com design/produto digital/IA/aprendizagem" };
   }
-  if (track.label === "IA aplicada" && !AI_APPLIED_EVIDENCE_RE.test(description)) {
-    return { ok: false, reason: "IA técnica sem aderência ao perfil aplicado" };
+  if (track.label === "IA aplicada") {
+    if (!AI_APPLIED_EVIDENCE_RE.test(description)) return { ok: false, reason: "IA técnica sem aderência ao perfil aplicado" };
   }
   if (track.label === "LXD / Design Instrucional" && !LXD_EVIDENCE_RE.test(description)) {
     return { ok: false, reason: "LXD sem conexão clara com aprendizagem" };
   }
 
   const reqIndex = description.search(/requisitos|qualificacoes|requirements|qualifications/);
-  const requirements = reqIndex >= 0 ? description.slice(reqIndex, reqIndex + 2800) : description.slice(0, 2800);
+  const requirements = reqIndex >= 0 ? description.slice(reqIndex, reqIndex + 3000) : description.slice(0, 3000);
 
   if (COMPLETED_DEGREE_RE.test(requirements) && !CURRENT_STUDY_OK_RE.test(requirements)) {
     return { ok: false, reason: "exige graduação concluída" };
@@ -104,6 +106,11 @@ function profileCompatibility(j: any) {
   }
   if (EXCESSIVE_EXP_RE.test(requirements)) {
     return { ok: false, reason: "experiência obrigatória acima do nível de entrada" };
+  }
+
+  if (track.label === "IA aplicada") {
+    const heavyTechCount = HEAVY_TECH_TERMS.filter(re => re.test(requirements)).length;
+    if (heavyTechCount >= 3) return { ok: false, reason: "vaga de IA predominantemente técnica/programação" };
   }
 
   let score = track.base;
@@ -169,19 +176,16 @@ async function gupy() {
     "Produto Digital", "Analista de Produto", "Product Operations", "Inovação",
     "Inteligência Artificial", "Customer Experience", "Design Instrucional", "Learning Experience"
   ];
-
   const pages = await Promise.allSettled(queries.map(async q => {
     const url = `https://employability-portal.gupy.io/api/v1/jobs?jobName=${encodeURIComponent(q)}&offset=0&limit=100`;
     const d: any = await getJson(url);
     return Array.isArray(d?.data) ? d.data : Array.isArray(d?.results) ? d.results : [];
   }));
-
   const byId = new Map<string, any>();
   for (const p of pages) {
     if (p.status !== "fulfilled") continue;
     for (const x of p.value) if (x?.id != null) byId.set(String(x.id), x);
   }
-
   return [...byId.values()].map((x: any) => {
     const workplace = norm(x.workplaceType || "");
     const remote = workplace === "remote" || workplace.includes("remot") || Boolean(x.isRemoteWork);
@@ -274,7 +278,6 @@ export async function GET(request: Request) {
   const settled = await Promise.allSettled(sources.map(([, fn]) => fn()));
   let jobs: any[] = [];
   const status: Record<string, any> = {};
-
   settled.forEach((r, i) => {
     const name = sources[i][0];
     if (r.status === "fulfilled") {
@@ -297,7 +300,7 @@ export async function GET(request: Request) {
     meta: {
       generatedAt: new Date().toISOString(),
       sources: status,
-      criteria: "Currículo Gabriel Gonzaga 2026: somente estágio/júnior aderente a Product Design/UX/UI, Produto Digital, CX, Inovação, IA aplicada ou LXD; formação e requisitos compatíveis; São Paulo capital ou remoto Brasil/Portugal."
+      criteria: "Currículo Gabriel Gonzaga 2026: somente estágio/júnior realmente aderente a Product Design/UX/UI, Produto Digital, CX, Inovação, IA aplicada ou LXD; formação e requisitos compatíveis; São Paulo capital ou remoto Brasil/Portugal."
     },
     jobs
   }, {

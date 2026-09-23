@@ -3,7 +3,7 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UA = "GabrielGonzaga-JobRadar/1.4";
+const UA = "GabrielGonzaga-JobRadar/2.0";
 const strip = (s = "") => String(s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 const norm = (s = "") => strip(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const iso = (v: any) => {
@@ -11,75 +11,142 @@ const iso = (v: any) => {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 };
 
-const POSITIVE: Array<[string, number]> = [
-  ["product designer", 30], ["product design", 24], ["ux designer", 27], ["ui designer", 23], ["ux/ui", 25], ["ui/ux", 25],
-  ["user experience", 19], ["service designer", 22], ["service design", 17], ["design system", 18],
-  ["interaction designer", 21], ["experience designer", 21], ["customer experience", 15], ["experiencia do cliente", 15],
-  ["innovation", 12], ["inovacao", 12], ["artificial intelligence", 9], ["inteligencia artificial", 9],
-  ["learning experience", 15], ["lxd", 15], ["instructional design", 13], ["design instrucional", 13],
-  ["digital product", 13], ["produto digital", 13], ["product", 10], ["produto", 10]
-];
-
+/*
+ * Perfil-alvo derivado do currículo 2026 do Gabriel:
+ * - objetivo: estágio/júnior em Produto Digital, Product Design, CX ou Inovação;
+ * - competências: UX/UI, pesquisa, IA aplicada, governança/produtização de IA,
+ *   LXD, Design Instrucional, Design Systems, prototipação, fluxos e documentação;
+ * - formação atual: Design Gráfico em andamento, conclusão prevista para dez/2027.
+ */
 const ENTRY_RE = /\b(junior|jr\.?|intern|internship|estagio|estagiario|estagiaria)\b/i;
 const MID_RE = /\b(mid-level|mid level|pleno|intermediate)\b/i;
 const SENIOR_RE = /\b(senior|sr\.?|staff|lead|principal|manager|gerente|director|diretor|head|vice president|vp|coordenador|coordinator|supervisor|specialist|especialista)\b/i;
-const ROLE_TITLE_RE = /(product designer|product design|ux\/?ui|ui\/?ux|ux designer|ui designer|user experience|service designer|experience designer|customer experience|experiencia do cliente|\bcx\b|innovation|inovacao|artificial intelligence|inteligencia artificial|learning experience|\blxd\b|instructional design|design instrucional|digital product|produto digital)/i;
+
+const TRACKS: Array<{ label: string; re: RegExp; base: number }> = [
+  { label: "Product Design / UX/UI", re: /(product designer|product design|ux\/?ui|ui\/?ux|ux designer|ui designer|user experience designer|experience designer|interaction designer|service designer|ux research|ux researcher|designer de produto digital)/i, base: 42 },
+  { label: "Produto Digital", re: /(digital product|produto digital|product analyst|analista de produto|product intern|estagio.*produto|product operations|product ops)/i, base: 38 },
+  { label: "Experiência do Cliente / CX", re: /(customer experience|experiencia do cliente|\bcx\b)/i, base: 36 },
+  { label: "Inovação", re: /(innovation|inovacao)/i, base: 35 },
+  { label: "IA aplicada", re: /(artificial intelligence|inteligencia artificial|\bgenai\b|\bia generativa\b|ai innovation|inovacao.*ia|ia.*inovacao)/i, base: 34 },
+  { label: "LXD / Design Instrucional", re: /(learning experience|\blxd\b|instructional design|design instrucional|aprendizagem corporativa)/i, base: 36 }
+];
+
+const HARD_EXCLUDE_TITLE_RE = /(product marketing|marketing de produto|desenvolvimento de produto|qualidade de produto|analista de sistemas|systems analyst|software|developer|desenvolvedor|engenheiro|engineer|data scientist|cientista de dados|machine learning engineer|contabilidade|accounting|farmacia|quimica|biomedicina|laboratorio|construcao civil|arquitetura|customer support|suporte ao cliente|suporte tecnico|technical support|vendas|sales)/i;
+
+const PROFILE_SKILLS: Array<[RegExp, string, number]> = [
+  [/(figma|wireframe|prototip|design system|interface|ux\/ui|ui\/ux)/i, "UX/UI e prototipação", 8],
+  [/(pesquisa com usuario|user research|ux research|entrevista|teste de usabilidade|usability|benchmark|pesquisa exploratoria)/i, "pesquisa e validação", 8],
+  [/(jornada|journey|fluxo|arquitetura da informacao|information architecture|experiencia do usuario)/i, "jornadas e fluxos", 6],
+  [/(inteligencia artificial|artificial intelligence|ia generativa|generative ai|chatgpt|copilot|prompt|governanca de ia|governance|automacao|automation)/i, "IA aplicada", 7],
+  [/(learning experience|lxd|design instrucional|instructional design|aprendizagem corporativa|treinamento|learning)/i, "LXD / aprendizagem", 7],
+  [/(documentacao|documentation|processo|process|melhoria continua|continuous improvement)/i, "documentação e melhoria contínua", 4],
+  [/(customer experience|experiencia do cliente|customer centric|nps|csat|insight|feedback de clientes)/i, "experiência do cliente", 6],
+  [/(produto digital|digital product|product discovery|discovery|hipotese|hypothesis|product strategy)/i, "produto digital", 7]
+];
+
+const CX_EVIDENCE_RE = /(pesquisa|research|jornada|journey|nps|csat|insight|feedback|customer centric|experiencia|experience|usuario|user|design|crm|comportamento)/i;
+const INNOVATION_EVIDENCE_RE = /(produto|product|digital|design|ux|usuario|user|inteligencia artificial|artificial intelligence|ia generativa|prompt|automacao|automation|pesquisa|research|prototip|learning|aprendizagem|processo)/i;
+const AI_APPLIED_EVIDENCE_RE = /(ia generativa|generative ai|chatgpt|copilot|prompt|governanca|governance|produtizacao|automacao|automation|processo|produto|product|innovation|inovacao|workflow|agente de ia|ai agent)/i;
+const LXD_EVIDENCE_RE = /(aprendizagem|learning|treinamento|training|conteudo|content|roteiro|storyboard|ava|lms|experiencia de aprendizagem|learning experience|educacao corporativa)/i;
+
+const ACADEMIC_COMPATIBLE_RE = /(design|design grafico|design digital|comunicacao|publicidade|marketing|produto|experiencia do usuario|ux|areas correlatas|area correlata|formacao correlata)/i;
+const SPECIFIC_DEGREE_RE = /(ciencias contabeis|contabilidade|farmacia|quimica|biologia|biomedicina|engenharia quimica|engenharia civil|arquitetura|ciencia da computacao|ciencias da computacao|engenharia da computacao|sistemas de informacao|analise de sistemas|pedagogia|licenciatura)/i;
+const ACADEMIC_REQUIREMENT_RE = /(ensino superior|graduacao|formacao academica|cursando|estudante de)/i;
+const COMPLETED_DEGREE_RE = /(ensino superior completo|superior completo|graduacao completa|formacao superior completa)/i;
+const CURRENT_STUDY_OK_RE = /(cursando ou completo|cursando\/completo|superior cursando|graduacao em andamento|cursando ensino superior|estudante)/i;
+const EXCESSIVE_EXP_RE = /(?:3|4|5|6|7|8|9|10)\+?\s*anos?[^.]{0,80}(experiencia|atuacao)|(?:experiencia|atuacao)[^.]{0,80}(?:3|4|5|6|7|8|9|10)\+?\s*anos?/i;
 
 function locationEligibility(j: any) {
   const loc = norm(j.location || "");
   const city = norm(j.city || "");
   const hasBrazil = /\b(brasil|brazil)\b/.test(loc) || /\b(brasil|brazil)\b/.test(norm(j.country || ""));
   const hasPortugal = /\bportugal\b/.test(loc) || /\bportugal\b/.test(norm(j.country || ""));
-  const isSaoPauloCity = city
-    ? city === "sao paulo"
-    : /^sao paulo(?:\s*[,/|-]|\s*$)/.test(loc);
+  const isSaoPauloCity = city ? city === "sao paulo" : /^sao paulo(?:\s*[,/|-]|\s*$)/.test(loc);
   const isRemote = Boolean(j.remote) || loc.includes("remote") || loc.includes("remoto");
 
   if (!isRemote && isSaoPauloCity) return { ok: true, group: "São Paulo · SP", reason: "São Paulo / SP" };
   if (isRemote && hasBrazil) return { ok: true, group: "Brasil · remoto", reason: "remoto para o Brasil" };
   if (isRemote && hasPortugal) return { ok: true, group: "Portugal · remoto", reason: "remoto para Portugal" };
   if (isRemote && isSaoPauloCity) return { ok: true, group: "São Paulo · SP", reason: "remoto em São Paulo / SP" };
-
   return { ok: false, group: null, reason: null };
 }
 
-function scoreJob(j: any) {
-  const titleHay = norm(j.title || "");
-  const hay = norm(` ${j.title} ${j.description || ""} ${(j.tags || []).join(" ")} ${j.location || ""} `);
-  const seniorityHay = norm(` ${j.title} ${(j.tags || []).join(" ")} `);
-  let score = 25;
-  const reasons: string[] = [];
+function profileCompatibility(j: any) {
+  const title = norm(j.title || "");
+  const description = norm(j.description || "");
+  const tags = norm((j.tags || []).join(" "));
+  const hay = `${title} ${description} ${tags}`;
+  const track = TRACKS.find(t => t.re.test(title));
+  if (!track) return { ok: false, reason: "cargo fora do objetivo do currículo" };
+  if (HARD_EXCLUDE_TITLE_RE.test(title)) return { ok: false, reason: "especialidade fora do perfil" };
 
-  for (const [k, w] of POSITIVE) {
-    if (hay.includes(k)) {
-      score += w;
-      if (reasons.length < 4) reasons.push(k);
-    }
+  if (track.label === "Experiência do Cliente / CX" && !CX_EVIDENCE_RE.test(description)) {
+    return { ok: false, reason: "CX sem aderência a pesquisa/jornada/experiência" };
+  }
+  if (track.label === "Inovação" && !INNOVATION_EVIDENCE_RE.test(description)) {
+    return { ok: false, reason: "inovação sem conexão com design/produto/IA/aprendizagem" };
+  }
+  if (track.label === "IA aplicada" && !AI_APPLIED_EVIDENCE_RE.test(description)) {
+    return { ok: false, reason: "IA técnica sem aderência ao perfil aplicado" };
+  }
+  if (track.label === "LXD / Design Instrucional" && !LXD_EVIDENCE_RE.test(description)) {
+    return { ok: false, reason: "LXD sem conexão clara com aprendizagem" };
   }
 
-  const roleMatched = ROLE_TITLE_RE.test(titleHay);
+  const reqIndex = description.search(/requisitos|qualificacoes|requirements|qualifications/);
+  const requirements = reqIndex >= 0 ? description.slice(reqIndex, reqIndex + 2800) : description.slice(0, 2800);
+
+  if (COMPLETED_DEGREE_RE.test(requirements) && !CURRENT_STUDY_OK_RE.test(requirements)) {
+    return { ok: false, reason: "exige graduação concluída" };
+  }
+  if (ACADEMIC_REQUIREMENT_RE.test(requirements) && SPECIFIC_DEGREE_RE.test(requirements) && !ACADEMIC_COMPATIBLE_RE.test(requirements)) {
+    return { ok: false, reason: "formação obrigatória incompatível" };
+  }
+  if (EXCESSIVE_EXP_RE.test(requirements)) {
+    return { ok: false, reason: "experiência obrigatória acima do nível de entrada" };
+  }
+
+  let score = track.base;
+  const reasons = [track.label];
+  for (const [re, label, weight] of PROFILE_SKILLS) {
+    if (re.test(hay)) {
+      score += weight;
+      if (reasons.length < 6) reasons.push(label);
+    }
+  }
+  return { ok: true, track: track.label, score, reasons };
+}
+
+function scoreJob(j: any) {
+  const seniorityHay = norm(` ${j.title} ${(j.tags || []).join(" ")} `);
   const isEntry = ENTRY_RE.test(seniorityHay);
   const isMid = MID_RE.test(seniorityHay);
   const isSenior = SENIOR_RE.test(seniorityHay);
   const eligibility = locationEligibility(j);
+  const profile = profileCompatibility(j);
 
-  if (isEntry) { score += 28; reasons.unshift("estágio / júnior"); }
-  if (isMid || isSenior) score -= 55;
-  if (eligibility.ok) { score += 10; reasons.push(eligibility.reason as string); }
-  if (j.remote) score += 4;
+  let score = profile.ok ? Number(profile.score || 0) : 0;
+  const reasons: string[] = profile.ok ? [...(profile.reasons || [])] : [];
+
+  if (isEntry) { score += 18; reasons.unshift("estágio / júnior"); }
+  if (isMid || isSenior) score -= 60;
+  if (eligibility.ok) { score += 8; reasons.push(eligibility.reason as string); }
+  if (j.remote) score += 3;
 
   if (j.publishedAt) {
     const age = (Date.now() - new Date(j.publishedAt).getTime()) / 86400000;
-    if (age <= 3) score += 8;
-    else if (age <= 10) score += 5;
-    else if (age > 60) score -= 20;
+    if (age <= 3) score += 7;
+    else if (age <= 10) score += 4;
+    else if (age > 60) score -= 15;
   }
 
   return {
     ...j,
     score: Math.max(0, Math.min(100, score)),
-    roleMatched,
-    reasons: [...new Set(reasons)],
+    profileMatched: profile.ok,
+    profileTrack: profile.track || null,
+    profileRejectReason: profile.ok ? null : profile.reason,
+    reasons: [...new Set(reasons)].slice(0, 7),
     level: isEntry && !isMid && !isSenior ? "entry" : isMid ? "mid" : isSenior ? "senior" : "unknown",
     locationEligible: eligibility.ok,
     locationGroup: eligibility.group
@@ -98,9 +165,9 @@ async function getJson(url: string) {
 
 async function gupy() {
   const queries = [
-    "Product Designer", "Product Design", "UX Designer", "UX UI", "UI Designer",
-    "Produto Digital", "Inovação", "Inteligência Artificial", "Customer Experience",
-    "Design Instrucional", "Learning Experience"
+    "Product Designer", "Product Design", "UX Designer", "UX UI", "UI Designer", "UX Research",
+    "Produto Digital", "Analista de Produto", "Product Operations", "Inovação",
+    "Inteligência Artificial", "Customer Experience", "Design Instrucional", "Learning Experience"
   ];
 
   const pages = await Promise.allSettled(queries.map(async q => {
@@ -127,16 +194,12 @@ async function gupy() {
       source: "Gupy",
       title: x.name || x.title || "Vaga sem título",
       company: x.careerPageName || x.companyName || "Empresa não informada",
-      location,
-      city,
-      state,
-      country,
-      remote,
+      location, city, state, country, remote,
       url: x.jobUrl || x.careerPageUrl || "",
       publishedAt: iso(x.publishedDate || x.createdAt || x.updatedAt),
       description: strip([x.description, x.responsibilities, x.prerequisites].filter(Boolean).join(" ")),
       tags: [x.workplaceType, x.jobType, x.type, x.roleName].filter(Boolean),
-      activeValidated: true
+      sourceActive: true
     };
   });
 }
@@ -148,12 +211,12 @@ async function jobicy() {
     company: x.companyName || "Empresa não informada", location: x.jobGeo || "Remoto", remote: true,
     url: x.url, publishedAt: iso(x.pubDate || x.jobPosted), description: strip(x.jobDescription || x.jobExcerpt),
     tags: [...(Array.isArray(x.jobIndustry) ? x.jobIndustry : [x.jobIndustry]), ...(Array.isArray(x.jobType) ? x.jobType : [x.jobType]), x.jobLevel].filter(Boolean),
-    activeValidated: true
+    sourceActive: true
   }));
 }
 
 async function remotive() {
-  const queries = ["product designer", "ux designer", "ui designer", "innovation", "learning experience", "instructional design"];
+  const queries = ["product designer", "ux designer", "ui designer", "customer experience", "innovation", "learning experience", "instructional design"];
   const out: any[] = [];
   const pages = await Promise.allSettled(queries.map(async q => {
     const d: any = await getJson(`https://remotive.com/api/remote-jobs?search=${encodeURIComponent(q)}&limit=100`);
@@ -165,7 +228,7 @@ async function remotive() {
       id: `remotive-${x.id}`, source: "Remotive", title: x.title,
       company: x.company_name || "Empresa não informada", location: x.candidate_required_location || "Remoto", remote: true,
       url: x.url, publishedAt: iso(x.publication_date), description: strip(x.description),
-      tags: [x.category, x.job_type, ...(x.tags || [])].filter(Boolean), activeValidated: true
+      tags: [x.category, x.job_type, ...(x.tags || [])].filter(Boolean), sourceActive: true
     });
   }
   return out;
@@ -177,7 +240,7 @@ async function arbeitnow() {
     id: `arbeitnow-${x.slug || x.url}`, source: "Arbeitnow", title: x.title,
     company: x.company_name || "Empresa não informada", location: x.location || "Local n/d", remote: Boolean(x.remote),
     url: x.url, publishedAt: iso((x.created_at || 0) * 1000), description: strip(x.description),
-    tags: [...(x.tags || []), ...(x.job_types || [])].filter(Boolean), activeValidated: true
+    tags: [...(x.tags || []), ...(x.job_types || [])].filter(Boolean), sourceActive: true
   }));
 }
 
@@ -187,7 +250,7 @@ async function remoteok() {
     id: `remoteok-${x.id}`, source: "RemoteOK", title: x.position,
     company: x.company || "Empresa não informada", location: x.location || "Worldwide / Remote", remote: true,
     url: x.url || x.apply_url, publishedAt: iso(x.date || x.epoch * 1000), description: strip(x.description),
-    tags: x.tags || [], activeValidated: true
+    tags: x.tags || [], sourceActive: true
   }));
 }
 
@@ -222,19 +285,19 @@ export async function GET(request: Request) {
 
   jobs = dedupe(jobs)
     .map(scoreJob)
-    .filter(j => j.url && j.title && j.company && j.roleMatched)
-    .filter(j => j.level === "entry" && j.locationEligible)
-    .filter(j => j.score >= 30)
+    .filter(j => j.url && j.title && j.company)
+    .filter(j => j.profileMatched && j.level === "entry" && j.locationEligible)
+    .filter(j => j.score >= 60)
     .filter(j => !j.publishedAt || (Date.now() - new Date(j.publishedAt).getTime()) / 86400000 <= 90)
     .sort((a, b) => b.score - a.score || +new Date(b.publishedAt || 0) - +new Date(a.publishedAt || 0))
-    .slice(0, 350)
-    .map(({ roleMatched, locationEligible, ...j }) => j);
+    .slice(0, 100)
+    .map(({ profileMatched, locationEligible, profileRejectReason, ...j }) => j);
 
   return Response.json({
     meta: {
       generatedAt: new Date().toISOString(),
       sources: status,
-      criteria: "Somente estágio/júnior; presencial ou híbrido somente em São Paulo capital; remoto apenas Brasil ou Portugal."
+      criteria: "Currículo Gabriel Gonzaga 2026: somente estágio/júnior aderente a Product Design/UX/UI, Produto Digital, CX, Inovação, IA aplicada ou LXD; formação e requisitos compatíveis; São Paulo capital ou remoto Brasil/Portugal."
     },
     jobs
   }, {

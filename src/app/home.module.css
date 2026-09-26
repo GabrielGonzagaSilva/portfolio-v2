@@ -52,7 +52,7 @@
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -3px;
-  animation: heroTextIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: heroTextIn 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .role {
@@ -65,7 +65,7 @@
   line-height: normal;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  animation: heroTextIn 480ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+  animation: heroTextIn 620ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both;
 }
 
 .statement {
@@ -75,13 +75,13 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
-  animation: heroTextIn 480ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+  animation: heroTextIn 640ms cubic-bezier(0.16, 1, 0.3, 1) 220ms both;
 }
 
 @keyframes heroTextIn {
   from {
     opacity: 0;
-    transform: translate3d(0, 12px, 0);
+    transform: translate3d(0, 10px, 0);
   }
 
   to {

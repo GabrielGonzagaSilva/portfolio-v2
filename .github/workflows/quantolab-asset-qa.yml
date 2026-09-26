@@ -1,0 +1,129 @@
+name: QuantoLab asset and visual QA
+
+on:
+  push:
+    branches:
+      - feat/figma-scalable-foundation
+    paths:
+      - .github/workflows/quantolab-asset-qa.yml
+
+permissions:
+  contents: write
+
+jobs:
+  qa:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/figma-scalable-foundation
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Match visible Figma device geometry
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('src/app/projects/quantolab/quantolab.module.css')
+          text = p.read_text()
+          replacements = {
+              '.mobilePhone {\n  width: 390px;': '.mobilePhone {\n  width: 459.396px;',
+              '  .mobilePhone {\n    width: 300px;': '  .mobilePhone {\n    width: 353.382px;',
+              '  .mobilePhone {\n    width: 280px;': '  .mobilePhone {\n    width: 329.823px;',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Expected CSS target not found: {old!r}')
+              text = text.replace(old, new, 1)
+          p.write_text(text)
+          PY
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify local QuantoLab assets
+        shell: bash
+        run: |
+          for file in \
+            hero.png catalog.png salary-result.png clt-pj.png home.png \
+            salary-input.png methodology.png mobile-phone.png; do
+            test -s "public/images/projects/quantolab/$file"
+          done
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        shell: bash
+        run: |
+          nohup npm start -- -p 3000 > /tmp/quantolab-next.log 2>&1 &
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:3000/projects/quantolab >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/quantolab-next.log
+          exit 1
+
+      - name: Download Figma reference screenshots
+        shell: bash
+        run: |
+          mkdir -p qa-quantolab/figma qa-quantolab/web
+          curl -L --fail 'https://www.figma.com/api/mcp/asset/7dfecf1d-40b9-4313-b1d2-4536f693117b.png' -o qa-quantolab/figma/quantolab-1440.png
+          curl -L --fail 'https://www.figma.com/api/mcp/asset/22a123af-02fa-4493-a74d-ca12d119b476.png' -o qa-quantolab/figma/quantolab-834.png
+          curl -L --fail 'https://www.figma.com/api/mcp/asset/8d81d2f2-fcbd-45f5-a9e8-dc8a470288a6.png' -o qa-quantolab/figma/quantolab-390.png
+
+      - name: Capture web screenshots
+        shell: bash
+        run: |
+          node <<'NODE'
+          const { chromium } = require('@playwright/test');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            for (const width of [1440, 834, 390]) {
+              const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
+              const page = await context.newPage();
+              await page.goto('http://127.0.0.1:3000/projects/quantolab', { waitUntil: 'networkidle' });
+              await page.evaluate(() => document.fonts.ready);
+              await page.screenshot({ path: `qa-quantolab/web/quantolab-${width}.png`, fullPage: true });
+              console.log(width, await page.evaluate(() => ({width: document.documentElement.scrollWidth, height: document.documentElement.scrollHeight})));
+              await context.close();
+            }
+            await browser.close();
+          })().catch((error) => { console.error(error); process.exit(1); });
+          NODE
+          cp /tmp/quantolab-next.log qa-quantolab/server.log
+
+      - name: Upload QA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quantolab-visual-qa-refined
+          path: qa-quantolab
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Commit device geometry correction
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/app/projects/quantolab/quantolab.module.css
+          if git diff --cached --quiet; then
+            echo 'No geometry changes to commit.'
+            exit 0
+          fi
+          git commit -m 'fix(portfolio): match QuantoLab device evidence bounds'
+          git push origin HEAD:feat/figma-scalable-foundation

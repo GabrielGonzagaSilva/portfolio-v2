@@ -1,0 +1,54 @@
+:root {
+  --portfolio-color-background-page: #fdfdfc;
+  --portfolio-color-surface-nav: #fdfdfc;
+  --portfolio-color-text-primary: #2b3242;
+  --portfolio-color-text-secondary: #5a6478;
+  --portfolio-color-text-tertiary: #9aa0ae;
+  --portfolio-color-text-accent: #4a5f8a;
+  --portfolio-color-text-inverse: #ffffff;
+  --portfolio-color-interactive-active: #2b3242;
+  --portfolio-color-border-default: #e8edf2;
+  --portfolio-color-border-strong: #2b3242;
+  --portfolio-color-placeholder: #e8edf2;
+
+  --portfolio-radius-card: 20px;
+  --portfolio-radius-pill: 30px;
+
+  --portfolio-space-6: 6px;
+  --portfolio-space-16: 16px;
+  --portfolio-space-24: 24px;
+  --portfolio-space-32: 32px;
+  --portfolio-space-40: 40px;
+  --portfolio-space-48: 48px;
+  --portfolio-space-64: 64px;
+  --portfolio-space-72: 72px;
+  --portfolio-space-96: 96px;
+  --portfolio-space-120: 120px;
+
+  --portfolio-content-max: 1200px;
+  --portfolio-page-width: 1440px;
+  --portfolio-grid-columns: 12;
+  --portfolio-grid-margin: 120px;
+  --portfolio-grid-gutter: 40px;
+  --portfolio-section-gap: 96px;
+  --portfolio-header-padding-y: 16px;
+
+  --portfolio-font-sans: var(--font-figma-sans), Arial, sans-serif;
+  --portfolio-font-mono: var(--font-figma-mono), ui-monospace, monospace;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --portfolio-grid-margin: 40px;
+    --portfolio-grid-gutter: 24px;
+    --portfolio-section-gap: 72px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --portfolio-grid-margin: 24px;
+    --portfolio-grid-gutter: 24px;
+    --portfolio-section-gap: 64px;
+  }
+}

@@ -1,0 +1,584 @@
+.page {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  align-items: center;
+  gap: 96px;
+  overflow-x: clip;
+  padding: 97px 120px 0;
+  background: var(--portfolio-color-background-page);
+  color: var(--portfolio-color-text-primary);
+  font-family: var(--portfolio-font-sans);
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 800px;
+  background: linear-gradient(180deg, #eaf1fb 0%, var(--portfolio-color-background-page) 100%);
+  pointer-events: none;
+}
+
+.hero {
+  display: flex;
+  width: 1120px;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-block: 16px;
+}
+
+.heroContent {
+  display: flex;
+  width: 1120px;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  overflow: hidden;
+}
+
+.heroTitle,
+.heroIntro,
+.profileCopy p,
+.principlesTitle,
+.principlesCopy,
+.experienceRole,
+.experienceDescription,
+.formationDescription {
+  margin: 0;
+}
+
+.heroTitle {
+  width: 926.67px;
+  color: var(--portfolio-color-text-primary);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.8px;
+}
+
+.heroIntro {
+  width: 733.33px;
+  color: var(--portfolio-color-text-secondary);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.main {
+  display: flex;
+  width: 1120px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 96px;
+}
+
+.section {
+  width: 100%;
+  border-top: 1px solid var(--portfolio-color-border-default);
+  padding-top: 40px;
+}
+
+.profileRow {
+  display: grid;
+  grid-template-columns: 346.67px 733.33px;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+
+.profileSidebar {
+  display: flex;
+  width: 346.67px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.sectionLabel,
+.profileLabel,
+.experienceCompany,
+.experienceDate,
+.formationTitle,
+.contactLink {
+  font-family: var(--portfolio-font-mono);
+}
+
+.sectionLabel,
+.profileLabel {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+.profileLabel {
+  width: 100%;
+  color: var(--portfolio-color-text-primary);
+  letter-spacing: 1.5px;
+}
+
+.sectionLabel {
+  color: var(--portfolio-color-text-tertiary);
+}
+
+.portrait {
+  display: block;
+  width: 346.67px;
+  height: 453.33px;
+  border: 1px solid var(--portfolio-color-border-strong);
+  border-radius: var(--portfolio-radius-card);
+  box-shadow: 0 8px 16px rgb(43 50 66 / 3%);
+  object-fit: cover;
+  object-position: center;
+}
+
+.profileCopy {
+  display: flex;
+  width: 733.33px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.profileCopy p {
+  color: var(--portfolio-color-text-secondary);
+  font-weight: 400;
+}
+
+.profileCopy .emphasis {
+  color: var(--portfolio-color-text-primary);
+  font-weight: 600;
+}
+
+.centeredRow {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.principlesLabel,
+.experienceLabel {
+  width: 926.67px;
+}
+
+.principlesContent {
+  display: flex;
+  width: 1120px;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.principlesTitle {
+  width: 926.67px;
+  color: var(--portfolio-color-text-primary);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.principlesCopy {
+  width: 733.33px;
+  color: var(--portfolio-color-text-secondary);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.experienceRow {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.experienceList {
+  display: flex;
+  width: 1120px;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+.experienceEntry {
+  display: flex;
+  width: 926.67px;
+  flex-direction: column;
+  gap: 20px;
+  border-top: 1px solid var(--portfolio-color-border-default);
+  padding-top: 20px;
+}
+
+.experienceContentRow {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 40px;
+  overflow: hidden;
+}
+
+.experienceMeta {
+  display: flex;
+  width: 200px;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--portfolio-color-text-tertiary);
+  font-size: 11px;
+  line-height: normal;
+  overflow: hidden;
+}
+
+.experienceCompany,
+.experienceDate {
+  margin: 0;
+}
+
+.experienceCompany {
+  font-weight: 500;
+}
+
+.experienceDate {
+  font-weight: 400;
+}
+
+.experienceBody {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.experienceRole {
+  color: var(--portfolio-color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.experienceDescription {
+  color: var(--portfolio-color-text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.educationRow,
+.contactRow {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.educationGrid {
+  display: grid;
+  width: 1120px;
+  grid-template-columns: repeat(2, 540px);
+  column-gap: 40px;
+  row-gap: 48px;
+}
+
+.formationItem {
+  display: flex;
+  width: 540px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formationTitle {
+  width: 346.67px;
+  margin: 0;
+  color: var(--portfolio-color-text-tertiary);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.formationDescription {
+  width: 100%;
+  color: var(--portfolio-color-text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 21px;
+}
+
+.contactLinks {
+  display: flex;
+  width: 1120px;
+  align-items: center;
+  gap: 32px;
+}
+
+.contactLink {
+  color: var(--portfolio-color-text-accent);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.contactLink:focus-visible {
+  outline: 2px solid var(--portfolio-color-text-accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1024px) {
+  .page {
+    gap: 72px;
+    padding: 88px 40px 0;
+  }
+
+  .page::before {
+    height: 650px;
+  }
+
+  .hero,
+  .heroContent,
+  .main,
+  .principlesContent,
+  .experienceList,
+  .educationGrid,
+  .contactLinks {
+    width: 754px;
+  }
+
+  .heroTitle,
+  .principlesTitle,
+  .principlesLabel,
+  .experienceLabel {
+    width: 690px;
+  }
+
+  .heroTitle {
+    font-size: 34px;
+    line-height: 44px;
+  }
+
+  .heroIntro,
+  .principlesCopy {
+    width: 620px;
+  }
+
+  .profileRow {
+    grid-template-columns: 240px 482px;
+    gap: 32px;
+  }
+
+  .profileSidebar {
+    width: 240px;
+  }
+
+  .portrait {
+    width: 240px;
+    height: 314px;
+  }
+
+  .profileCopy {
+    width: 482px;
+  }
+
+  .principlesTitle {
+    font-size: 32px;
+    line-height: 42px;
+  }
+
+  .experienceList {
+    gap: 40px;
+  }
+
+  .experienceEntry {
+    width: 690px;
+  }
+
+  .experienceContentRow {
+    gap: 32px;
+  }
+
+  .educationGrid {
+    grid-template-columns: repeat(2, 361px);
+    column-gap: 32px;
+    row-gap: 40px;
+  }
+
+  .formationItem,
+  .formationTitle {
+    width: 361px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    gap: 64px;
+    padding: 88px 24px 0;
+  }
+
+  .page::before {
+    height: 520px;
+  }
+
+  .hero,
+  .heroContent,
+  .main,
+  .profileSidebar,
+  .profileCopy,
+  .principlesContent,
+  .principlesTitle,
+  .principlesCopy,
+  .experienceList,
+  .experienceEntry,
+  .educationGrid,
+  .contactLinks {
+    width: 342px;
+  }
+
+  .hero {
+    gap: 22px;
+  }
+
+  .heroContent {
+    align-items: flex-start;
+  }
+
+  .heroTitle {
+    width: 342px;
+    font-size: 30px;
+    line-height: 39px;
+  }
+
+  .heroIntro {
+    width: 342px;
+    font-size: 15px;
+    line-height: 25px;
+  }
+
+  .main {
+    gap: 64px;
+  }
+
+  .profileRow {
+    display: flex;
+    width: 342px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+  }
+
+  .portrait {
+    width: 342px;
+    height: 447px;
+  }
+
+  .profileCopy {
+    gap: 22px;
+    font-size: 16px;
+    line-height: 27px;
+  }
+
+  .centeredRow,
+  .experienceRow,
+  .educationRow,
+  .contactRow {
+    align-items: flex-start;
+  }
+
+  .principlesLabel,
+  .experienceLabel {
+    width: 342px;
+  }
+
+  .principlesContent {
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .principlesTitle {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .principlesCopy {
+    font-size: 16px;
+    line-height: 27px;
+  }
+
+  .experienceList {
+    align-items: flex-start;
+    gap: 36px;
+  }
+
+  .experienceEntry {
+    gap: 20px;
+  }
+
+  .experienceContentRow {
+    display: flex;
+    width: 342px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .experienceMeta {
+    width: 342px;
+  }
+
+  .experienceDescription {
+    line-height: 20px;
+  }
+
+  .educationGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .formationItem,
+  .formationTitle {
+    width: 342px;
+  }
+
+  .contactLinks {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@keyframes aboutHeroReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.heroTitle {
+  animation: aboutHeroReveal 520ms cubic-bezier(0.22, 1, 0.36, 1) 70ms both;
+}
+
+.heroIntro {
+  animation: aboutHeroReveal 480ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroTitle,
+  .heroIntro {
+    animation: none;
+  }
+}

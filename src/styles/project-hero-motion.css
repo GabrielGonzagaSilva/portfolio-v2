@@ -1,0 +1,81 @@
+/* Shared entrance motion for portfolio project heroes.
+   Structural selectors keep the behavior reusable across future case-study routes. */
+
+main#top > section:has(> a[href="/#work"]) > a[href="/#work"] {
+  animation: projectHeroReveal 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 {
+  animation: projectHeroReveal 760ms cubic-bezier(0.16, 1, 0.3, 1) 70ms both;
+}
+
+main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p {
+  animation: projectHeroReveal 700ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both;
+}
+
+main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p + p {
+  animation: projectHeroReveal 660ms cubic-bezier(0.16, 1, 0.3, 1) 230ms both;
+}
+
+main#top > section:has(> a[href="/#work"]) > div[aria-hidden="true"] {
+  transform-origin: left center;
+  animation: projectHeroDividerReveal 600ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both;
+}
+
+main#top > section:has(> a[href="/#work"]) > div:last-child {
+  animation: projectHeroReveal 640ms cubic-bezier(0.16, 1, 0.3, 1) 350ms both;
+}
+
+main#top > section:has(> a[href="/#work"]) + section {
+  animation: projectHeroVisualReveal 820ms cubic-bezier(0.16, 1, 0.3, 1) 430ms both;
+}
+
+@keyframes projectHeroReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes projectHeroDividerReveal {
+  from {
+    opacity: 0;
+    transform: scaleX(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes projectHeroVisualReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.997);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main#top > section:has(> a[href="/#work"]) > a[href="/#work"],
+  main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1,
+  main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p,
+  main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p + p,
+  main#top > section:has(> a[href="/#work"]) > div[aria-hidden="true"],
+  main#top > section:has(> a[href="/#work"]) > div:last-child,
+  main#top > section:has(> a[href="/#work"]) + section {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Instrument_Sans } from "next/font/google";
+import { IBM_Plex_Mono, Instrument_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "@/styles/tokens.css";
+import "@/styles/project-hero-motion.css";
+import { PortfolioNavigationShell } from "@/components/navigation/portfolio-navigation-shell";
 import { siteConfig } from "@/lib/site";
 
 const instrumentSans = Instrument_Sans({
@@ -13,6 +16,19 @@ const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-mono",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-figma-sans",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-figma-mono",
   display: "swap",
 });
 
@@ -33,8 +49,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${instrumentSans.variable} ${ibmPlexMono.variable}`}>
-      <body>{children}</body>
+    <html
+      lang="pt-BR"
+      className={`${instrumentSans.variable} ${ibmPlexMono.variable} ${inter.variable} ${jetBrainsMono.variable}`}
+    >
+      <body>
+        <PortfolioNavigationShell>{children}</PortfolioNavigationShell>
+      </body>
     </html>
   );
 }

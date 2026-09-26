@@ -1,20 +1,37 @@
 .header {
-  position: absolute;
+  position: fixed;
   inset: 0 0 auto;
-  z-index: 10;
+  z-index: 50;
   display: flex;
   justify-content: center;
   padding: var(--portfolio-header-padding-y) var(--portfolio-grid-margin);
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    backdrop-filter 180ms ease;
+}
+
+.scrolled {
+  border-bottom-color: rgba(43, 50, 66, 0.08);
+  background: rgba(253, 253, 252, 0.78);
+  box-shadow: 0 1px 0 rgba(43, 50, 66, 0.02);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  backdrop-filter: blur(12px) saturate(120%);
 }
 
 .nav {
   display: inline-flex;
-  width: 234px;
+  width: auto;
   align-items: center;
   justify-content: center;
   padding: 4px;
+  border: 1px solid rgba(232, 237, 242, 0.72);
   border-radius: var(--portfolio-radius-pill);
-  background: var(--portfolio-color-surface-nav);
+  background: rgba(253, 253, 252, 0.92);
+  box-shadow: 0 2px 10px rgba(43, 50, 66, 0.035);
 }
 
 .item {
@@ -29,10 +46,21 @@
   font-weight: 500;
   line-height: normal;
   white-space: nowrap;
+  transition:
+    color 140ms ease,
+    background-color 140ms ease;
+}
+
+.item:hover {
+  color: var(--portfolio-color-text-primary);
 }
 
 .active {
   background: var(--portfolio-color-interactive-active);
+  color: var(--portfolio-color-text-inverse);
+}
+
+.active:hover {
   color: var(--portfolio-color-text-inverse);
 }
 
@@ -52,27 +80,53 @@
   }
 
   .caseNav {
-    width: auto;
-    gap: 12px;
+    gap: 4px;
   }
 
   .caseItem {
-    padding: 7px 16px;
+    padding: 7px 14px;
   }
 }
 
 @media (max-width: 600px) {
+  .header {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .nav {
+    width: 100%;
+    justify-content: space-between;
+    padding: 3px 4px;
+  }
+
+  .item {
+    flex: 0 1 auto;
+    padding: 7px 12px;
+  }
+
   .caseHeader {
     padding: 12px 24px;
   }
 
   .caseNav {
-    width: auto;
-    gap: 12px;
-    padding: 3px 4px;
+    gap: 0;
   }
 
   .caseItem {
-    padding: 6px 16px;
+    padding: 6px 11px;
+  }
+
+  .scrolled {
+    background: rgba(253, 253, 252, 0.82);
+    -webkit-backdrop-filter: blur(10px) saturate(115%);
+    backdrop-filter: blur(10px) saturate(115%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .item {
+    transition: none;
   }
 }

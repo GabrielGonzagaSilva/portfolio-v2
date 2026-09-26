@@ -94,17 +94,6 @@
     padding-left: 24px;
   }
 
-  .nav {
-    width: 100%;
-    justify-content: space-between;
-    padding: 3px 4px;
-  }
-
-  .item {
-    flex: 0 1 auto;
-    padding: 7px 12px;
-  }
-
   .caseHeader {
     padding: 12px 24px;
   }

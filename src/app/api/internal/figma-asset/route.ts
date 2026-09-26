@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const source = request.nextUrl.searchParams.get("src");
+  const encoding = request.nextUrl.searchParams.get("encoding");
 
   if (!source) {
     return new Response("Missing src", { status: 400 });
@@ -30,6 +31,19 @@ export async function GET(request: NextRequest) {
   }
 
   const body = await upstream.arrayBuffer();
+
+  if (encoding === "base64") {
+    return new Response(Buffer.from(body).toString("base64"), {
+      status: 200,
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "private, no-store, max-age=0",
+        "X-Asset-Content-Type": upstream.headers.get("content-type") ?? "application/octet-stream",
+        "X-Robots-Tag": "noindex, nofollow",
+      },
+    });
+  }
+
   return new Response(body, {
     status: 200,
     headers: {

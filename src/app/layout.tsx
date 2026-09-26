@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Instrument_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "@/styles/tokens.css";
+import "@/styles/project-hero-motion.css";
 import { PortfolioNavigationShell } from "@/components/navigation/portfolio-navigation-shell";
 import { siteConfig } from "@/lib/site";
 

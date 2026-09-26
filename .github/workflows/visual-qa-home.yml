@@ -1,0 +1,76 @@
+name: Visual QA Home
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/figma-scalable-foundation]
+    paths:
+      - "src/app/page.tsx"
+      - "src/app/home.module.css"
+      - "src/components/navigation/**"
+      - "src/components/projects/**"
+      - "src/components/layout/**"
+      - "src/data/projects.ts"
+      - "src/styles/tokens.css"
+      - "public/images/projects/**"
+      - ".github/workflows/visual-qa-home.yml"
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: npm install
+      - run: npm install --no-save --package-lock=false playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+
+      - name: Download current Figma references
+        run: |
+          mkdir -p qa/figma qa/web
+          curl -L --fail -o qa/figma/home-1440.png "https://www.figma.com/api/mcp/asset/971f75b0-8d13-4c06-b4e8-318bf041edf3.png"
+          curl -L --fail -o qa/figma/home-834.png "https://www.figma.com/api/mcp/asset/bce8fc80-9a0e-429f-af2f-9eddd9b94390.png"
+          curl -L --fail -o qa/figma/home-390.png "https://www.figma.com/api/mcp/asset/c45d195a-ab05-4e9a-9f0c-b19510dadca3.png"
+
+      - name: Start app
+        run: |
+          npm run dev > /tmp/portfolio-v2.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/portfolio-v2.log
+          exit 1
+
+      - name: Capture exact target viewports
+        run: |
+          cat > /tmp/capture.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch({ headless: true });
+          const targets = [
+            { width: 1440, height: 900, file: 'qa/web/home-1440.png' },
+            { width: 834, height: 900, file: 'qa/web/home-834.png' },
+            { width: 390, height: 844, file: 'qa/web/home-390.png' },
+          ];
+          for (const target of targets) {
+            const page = await browser.newPage({ viewport: { width: target.width, height: target.height }, deviceScaleFactor: 1 });
+            await page.goto('http://127.0.0.1:3000/', { waitUntil: 'networkidle' });
+            await page.evaluate(() => document.fonts.ready);
+            await page.screenshot({ path: target.file, fullPage: true, animations: 'disabled' });
+            await page.close();
+          }
+          await browser.close();
+          EOF
+          node /tmp/capture.mjs
+
+      - name: Upload visual QA package
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-visual-qa
+          path: qa
+          retention-days: 7

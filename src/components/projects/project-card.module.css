@@ -9,7 +9,7 @@
 .media {
   position: relative;
   width: 100%;
-  height: 340px;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: var(--portfolio-radius-card);
   background: var(--portfolio-color-background-page);
@@ -65,16 +65,4 @@
   outline: 2px solid var(--portfolio-color-text-accent);
   outline-offset: 6px;
   border-radius: var(--portfolio-radius-card);
-}
-
-@media (max-width: 1024px) {
-  .media {
-    height: 214px;
-  }
-}
-
-@media (max-width: 600px) {
-  .media {
-    height: 200px;
-  }
 }

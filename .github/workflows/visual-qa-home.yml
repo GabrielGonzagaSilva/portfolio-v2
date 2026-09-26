@@ -49,7 +49,7 @@ jobs:
 
       - name: Capture exact target viewports
         run: |
-          cat > /tmp/capture.mjs <<'EOF'
+          cat > capture-home-qa.mjs <<'EOF'
           import { chromium } from 'playwright';
           const browser = await chromium.launch({ headless: true });
           const targets = [
@@ -66,7 +66,8 @@ jobs:
           }
           await browser.close();
           EOF
-          node /tmp/capture.mjs
+          node capture-home-qa.mjs
+          rm capture-home-qa.mjs
 
       - name: Upload visual QA package
         uses: actions/upload-artifact@v4

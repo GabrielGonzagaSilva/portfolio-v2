@@ -36,7 +36,7 @@ function PrimaryNavRuntime({ active, variant = "default" }: Omit<PrimaryNavProps
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const mountedRef = useRef(false);
-  const lastTargetRef = useRef<NavKey>();
+  const lastTargetRef = useRef<NavKey | undefined>(undefined);
   const frameRef = useRef<number[]>([]);
   const isCase = variant === "case";
   const effectiveActive = active === "home" ? homeSection : active;
@@ -67,8 +67,7 @@ function PrimaryNavRuntime({ active, variant = "default" }: Omit<PrimaryNavProps
       frame = window.requestAnimationFrame(() => {
         const activationLine = Math.min(window.innerHeight * 0.4, 320);
         const workTop = workSection.getBoundingClientRect().top;
-        const shouldBeWork = window.location.hash === "#work" || workTop <= activationLine;
-        setHomeSection(shouldBeWork ? "work" : "home");
+        setHomeSection(workTop <= activationLine ? "work" : "home");
       });
     };
 

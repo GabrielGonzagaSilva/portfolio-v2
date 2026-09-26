@@ -1,33 +1,6 @@
-/* Shared project-hero layout and entrance motion.
-   Structural selectors keep the behavior reusable across future case-study routes. */
-
-/* Keep every hero element on the same 1200px content axis.
-   The previous fixed 120px gutter + fixed 1200px children only aligned at 1440px. */
-main#top > section:has(> a[href="/#work"]) {
-  padding-inline: max(120px, calc((100vw - 1200px) / 2));
-}
-
-main#top > section:has(> a[href="/#work"]) > div:first-of-type,
-main#top > section:has(> a[href="/#work"]) > div:last-child {
-  width: 100%;
-  max-width: 1200px;
-}
-
-main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 {
-  width: min(993.33px, 100%);
-}
-
-main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p {
-  width: min(786.67px, 100%);
-}
-
-main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p + p {
-  width: min(620px, 100%);
-}
-
-main#top > section:has(> a[href="/#work"]) > div:last-child {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
+/* Shared entrance motion for portfolio project heroes.
+   Important: this file must never redefine layout geometry. Widths, spacing,
+   gutters and responsive behavior remain owned by each project page stylesheet. */
 
 main#top > section:has(> a[href="/#work"]) > a[href="/#work"] {
   animation: projectHeroReveal 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -54,7 +27,8 @@ main#top > section:has(> a[href="/#work"]) > div:last-child {
   animation: projectHeroReveal 640ms cubic-bezier(0.16, 1, 0.3, 1) 350ms both;
 }
 
-main#top > section:has(> a[href="/#work"]) + section {
+/* Animate only the visual itself, never the full-width section. */
+main#top > section:has(> a[href="/#work"]) + section > div:first-child {
   animation: projectHeroVisualReveal 820ms cubic-bezier(0.16, 1, 0.3, 1) 430ms both;
 }
 
@@ -85,28 +59,12 @@ main#top > section:has(> a[href="/#work"]) + section {
 @keyframes projectHeroVisualReveal {
   from {
     opacity: 0;
-    transform: translate3d(0, 12px, 0) scale(0.997);
+    transform: translate3d(0, 10px, 0);
   }
 
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-@media (max-width: 1024px) {
-  main#top > section:has(> a[href="/#work"]) {
-    padding-inline: 40px;
-  }
-}
-
-@media (max-width: 600px) {
-  main#top > section:has(> a[href="/#work"]) {
-    padding-inline: 24px;
-  }
-
-  main#top > section:has(> a[href="/#work"]) > div:last-child {
-    grid-template-columns: 1fr;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -117,7 +75,7 @@ main#top > section:has(> a[href="/#work"]) + section {
   main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p + p,
   main#top > section:has(> a[href="/#work"]) > div[aria-hidden="true"],
   main#top > section:has(> a[href="/#work"]) > div:last-child,
-  main#top > section:has(> a[href="/#work"]) + section {
+  main#top > section:has(> a[href="/#work"]) + section > div:first-child {
     animation: none;
     opacity: 1;
     transform: none;

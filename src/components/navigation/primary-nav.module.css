@@ -9,6 +9,7 @@
 
 .nav {
   display: inline-flex;
+  width: 234px;
   align-items: center;
   justify-content: center;
   padding: 4px;

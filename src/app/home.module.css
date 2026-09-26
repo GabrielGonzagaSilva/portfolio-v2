@@ -51,6 +51,7 @@
   font-size: 96px;
   font-weight: 700;
   line-height: 1.05;
+  letter-spacing: -3px;
 }
 
 .role {
@@ -61,6 +62,7 @@
   font-size: 12px;
   font-weight: 500;
   line-height: normal;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 

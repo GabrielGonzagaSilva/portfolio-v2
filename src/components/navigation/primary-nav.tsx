@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { PortfolioNavigationHostedContext } from "./navigation-host-context";
 import styles from "./primary-nav.module.css";
 
 type NavKey = "home" | "work" | "about";
@@ -9,6 +10,7 @@ type NavKey = "home" | "work" | "about";
 type PrimaryNavProps = {
   active?: NavKey;
   variant?: "default" | "case";
+  renderInHost?: boolean;
 };
 
 type IndicatorState = {
@@ -17,22 +19,24 @@ type IndicatorState = {
   visible: boolean;
 };
 
-let persistedActive: NavKey | undefined;
-
 const navItems = [
   { key: "home", label: "Home", href: "/" },
   { key: "work", label: "Work", href: "/#work" },
   { key: "about", label: "About", href: "/about" },
 ] as const;
 
-export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
+const navOrder: NavKey[] = ["home", "work", "about"];
+
+function PrimaryNavRuntime({ active, variant = "default" }: Omit<PrimaryNavProps, "renderInHost">) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [homeSection, setHomeSection] = useState<"home" | "work">("home");
   const [indicator, setIndicator] = useState<IndicatorState>({ x: 0, width: 0, visible: false });
   const [indicatorReady, setIndicatorReady] = useState(false);
+  const [longTravel, setLongTravel] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const mountedRef = useRef(false);
+  const lastTargetRef = useRef<NavKey>();
   const frameRef = useRef<number[]>([]);
   const isCase = variant === "case";
   const effectiveActive = active === "home" ? homeSection : active;
@@ -41,10 +45,14 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
     const updateScrollState = () => setIsScrolled(window.scrollY > 16);
 
     updateScrollState();
+    const frame = window.requestAnimationFrame(updateScrollState);
     window.addEventListener("scroll", updateScrollState, { passive: true });
 
-    return () => window.removeEventListener("scroll", updateScrollState);
-  }, []);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateScrollState);
+    };
+  }, [active, variant]);
 
   useEffect(() => {
     if (active !== "home") return;
@@ -59,7 +67,8 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
       frame = window.requestAnimationFrame(() => {
         const activationLine = Math.min(window.innerHeight * 0.4, 320);
         const workTop = workSection.getBoundingClientRect().top;
-        setHomeSection(workTop <= activationLine ? "work" : "home");
+        const shouldBeWork = window.location.hash === "#work" || workTop <= activationLine;
+        setHomeSection(shouldBeWork ? "work" : "home");
       });
     };
 
@@ -84,7 +93,7 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
     frameRef.current.forEach((frame) => window.cancelAnimationFrame(frame));
     frameRef.current = [];
 
-    const resolveHomeTarget = (): NavKey => {
+    const resolveTarget = (): NavKey => {
       if (active !== "home") return active;
 
       const workSection = document.getElementById("work");
@@ -92,18 +101,16 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
 
       const activationLine = Math.min(window.innerHeight * 0.4, 320);
       const workTop = workSection.getBoundingClientRect().top;
-      const shouldBeWork = window.location.hash === "#work" || workTop <= activationLine;
-
-      if (homeSection !== (shouldBeWork ? "work" : "home")) {
-        setHomeSection(shouldBeWork ? "work" : "home");
-      }
-
-      return shouldBeWork ? "work" : "home";
+      return window.location.hash === "#work" || workTop <= activationLine ? "work" : "home";
     };
 
-    const targetKey = resolveHomeTarget();
+    const targetKey = resolveTarget();
     const targetItem = itemRefs.current[targetKey];
     if (!targetItem) return;
+
+    if (active === "home" && homeSection !== targetKey) {
+      setHomeSection(targetKey === "work" ? "work" : "home");
+    }
 
     const geometryFor = (item: HTMLAnchorElement): IndicatorState => ({
       x: item.offsetLeft,
@@ -112,40 +119,30 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
     });
 
     const targetGeometry = geometryFor(targetItem);
-    const previousKey = persistedActive;
-    const previousItem = previousKey ? itemRefs.current[previousKey] : null;
+    const previousKey = lastTargetRef.current;
+    const previousIndex = previousKey ? navOrder.indexOf(previousKey) : -1;
+    const targetIndex = navOrder.indexOf(targetKey);
+    const travelDistance = previousIndex >= 0 ? Math.abs(targetIndex - previousIndex) : 0;
+
+    setLongTravel(travelDistance > 1);
 
     if (!mountedRef.current) {
       setIndicatorReady(false);
+      setIndicator(targetGeometry);
 
-      if (previousItem && previousKey !== targetKey) {
-        setIndicator(geometryFor(previousItem));
-
-        const firstFrame = window.requestAnimationFrame(() => {
-          const secondFrame = window.requestAnimationFrame(() => {
-            setIndicatorReady(true);
-            setIndicator(targetGeometry);
-          });
-          frameRef.current.push(secondFrame);
-        });
-        frameRef.current.push(firstFrame);
-      } else {
-        setIndicator(targetGeometry);
-        const readyFrame = window.requestAnimationFrame(() => {
-          setIndicatorReady(true);
-        });
-        frameRef.current.push(readyFrame);
-      }
-
+      const readyFrame = window.requestAnimationFrame(() => {
+        setIndicatorReady(true);
+      });
+      frameRef.current.push(readyFrame);
       mountedRef.current = true;
     } else {
       setIndicator(targetGeometry);
     }
 
-    persistedActive = targetKey;
+    lastTargetRef.current = targetKey;
 
     const resizeObserver = new ResizeObserver(() => {
-      const currentTarget = itemRefs.current[targetKey];
+      const currentTarget = itemRefs.current[lastTargetRef.current ?? targetKey];
       if (!currentTarget) return;
       setIndicator(geometryFor(currentTarget));
     });
@@ -169,7 +166,7 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
         aria-label="Navegação principal"
       >
         <span
-          className={`${styles.activeIndicator} ${indicatorReady ? styles.activeIndicatorReady : ""}`}
+          className={`${styles.activeIndicator} ${indicatorReady ? styles.activeIndicatorReady : ""} ${longTravel ? styles.activeIndicatorLong : ""}`}
           aria-hidden="true"
           style={{
             width: `${indicator.width}px`,
@@ -199,4 +196,12 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
       </nav>
     </header>
   );
+}
+
+export function PrimaryNav({ active, variant = "default", renderInHost = false }: PrimaryNavProps) {
+  const isHosted = useContext(PortfolioNavigationHostedContext);
+
+  if (isHosted && !renderInHost) return null;
+
+  return <PrimaryNavRuntime active={active} variant={variant} />;
 }

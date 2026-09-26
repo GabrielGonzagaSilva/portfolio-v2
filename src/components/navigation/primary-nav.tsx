@@ -17,7 +17,9 @@ const navItems = [
 
 export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [homeSection, setHomeSection] = useState<"home" | "work">("home");
   const isCase = variant === "case";
+  const effectiveActive = active === "home" ? homeSection : active;
 
   useEffect(() => {
     const updateScrollState = () => setIsScrolled(window.scrollY > 16);
@@ -27,6 +29,34 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
 
     return () => window.removeEventListener("scroll", updateScrollState);
   }, []);
+
+  useEffect(() => {
+    if (active !== "home") return;
+
+    const workSection = document.getElementById("work");
+    if (!workSection) return;
+
+    let frame = 0;
+
+    const updateActiveSection = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const activationLine = Math.min(window.innerHeight * 0.4, 320);
+        const workTop = workSection.getBoundingClientRect().top;
+        setHomeSection(workTop <= activationLine ? "work" : "home");
+      });
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, [active]);
 
   return (
     <header
@@ -41,8 +71,8 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
           <Link
             key={item.key}
             href={item.href}
-            className={`${styles.item} ${isCase ? styles.caseItem : ""} ${active === item.key ? styles.active : ""}`}
-            aria-current={active === item.key ? "page" : undefined}
+            className={`${styles.item} ${isCase ? styles.caseItem : ""} ${effectiveActive === item.key ? styles.active : ""}`}
+            aria-current={effectiveActive === item.key ? "page" : undefined}
           >
             {item.label}
           </Link>

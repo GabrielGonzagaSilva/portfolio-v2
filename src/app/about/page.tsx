@@ -88,7 +88,6 @@ export default function AboutPage() {
               </p>
               <img className={styles.portrait} src={portrait} alt="Retrato de Gabriel Gonzaga" />
             </div>
-
             <div className={styles.profileCopy}>
               <p className={styles.emphasis}>
                 Comecei no design visual e no trabalho autoral. Passei por design digital, direção de arte e atendimento a
@@ -119,8 +118,8 @@ export default function AboutPage() {
             </p>
             <div className={styles.principlesContent}>
               <p className={styles.principlesTitle}>
-                Para mim, design não começa na interface. Começa tentando entender o que precisa ser resolvido, para quem e
-                por quê.
+                Para mim, design não começa na interface. Começa tentando entender o que precisa ser resolvido, para quem e por
+                quê.
               </p>
               <p className={styles.principlesCopy}>
                 A parte visual importa muito, mas funciona melhor quando existe uma lógica por trás. Por isso, tento sempre
@@ -137,7 +136,7 @@ export default function AboutPage() {
             </p>
             <div className={styles.experienceList}>
               {experience.map((item) => (
-                <article key={item.company} className={styles.experienceEntry}>
+                <article className={styles.experienceEntry} key={item.company}>
                   <div className={styles.experienceContentRow}>
                     <div className={styles.experienceMeta}>
                       <p className={styles.experienceCompany}>{item.company}</p>
@@ -161,7 +160,7 @@ export default function AboutPage() {
             </p>
             <div className={styles.educationGrid}>
               {education.map((item) => (
-                <article key={item.title} className={styles.formationItem}>
+                <article className={styles.formationItem} key={item.title}>
                   <h2 className={styles.formationTitle}>{item.title}</h2>
                   <p className={styles.formationDescription}>{item.description}</p>
                 </article>

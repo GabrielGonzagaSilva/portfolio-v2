@@ -28,26 +28,39 @@ jobs:
         with:
           node-version: 22
 
+      - name: Match visible Figma device geometry
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('src/app/projects/quantolab/quantolab.module.css')
+          text = p.read_text()
+          replacements = {
+              '.mobilePhone {\n  width: 390px;': '.mobilePhone {\n  width: 459.396px;',
+              '  .mobilePhone {\n    width: 300px;': '  .mobilePhone {\n    width: 353.382px;',
+              '  .mobilePhone {\n    width: 280px;': '  .mobilePhone {\n    width: 329.823px;',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Expected CSS target not found: {old!r}')
+              text = text.replace(old, new, 1)
+          p.write_text(text)
+          PY
+
       - name: Install dependencies
         run: npm install
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Version QuantoLab Figma assets
+      - name: Verify local QuantoLab assets
         shell: bash
         run: |
-          mkdir -p public/images/projects/quantolab
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/e9ce0913-a34a-44d9-91d5-db09a43126ec.png' -o public/images/projects/quantolab/hero.png
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/cdb3d4ef-d756-4e2e-aa46-e3c9eeaec95f.png' -o public/images/projects/quantolab/catalog.png
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/59495283-7963-4a7c-a69e-b4bc5efea76a.png' -o public/images/projects/quantolab/salary-result.png
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/591ab36d-1af1-485e-8520-9c0f8ebfb8cc.png' -o public/images/projects/quantolab/clt-pj.png
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/69365da0-8701-49bc-b1e4-7be240f67801.png' -o public/images/projects/quantolab/home.png
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/a41a5434-69cf-4d45-9278-1f9c075baebd.png' -o public/images/projects/quantolab/salary-input.png
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/81201708-d592-4474-ba1f-f8b82f4acdf7.png' -o public/images/projects/quantolab/methodology.png
-          curl -L --fail --retry 3 'https://www.figma.com/api/mcp/asset/1459541a-22b8-4fc9-b2d3-903841ca7cc2.png' -o public/images/projects/quantolab/mobile-phone.png
-          test -s public/images/projects/quantolab/hero.png
-          test -s public/images/projects/quantolab/mobile-phone.png
+          for file in \
+            hero.png catalog.png salary-result.png clt-pj.png home.png \
+            salary-input.png methodology.png mobile-phone.png; do
+            test -s "public/images/projects/quantolab/$file"
+          done
 
       - name: Build application
         run: npm run build
@@ -97,20 +110,20 @@ jobs:
       - name: Upload QA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: quantolab-visual-qa
+          name: quantolab-visual-qa-refined
           path: qa-quantolab
           if-no-files-found: error
           retention-days: 3
 
-      - name: Commit local QuantoLab assets
+      - name: Commit device geometry correction
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/images/projects/quantolab
+          git add src/app/projects/quantolab/quantolab.module.css
           if git diff --cached --quiet; then
-            echo 'No asset changes to commit.'
+            echo 'No geometry changes to commit.'
             exit 0
           fi
-          git commit -m 'chore(portfolio): version QuantoLab Figma assets'
+          git commit -m 'fix(portfolio): match QuantoLab device evidence bounds'
           git push origin HEAD:feat/figma-scalable-foundation

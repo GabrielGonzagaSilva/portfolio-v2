@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { PortfolioFooter } from "@/components/layout/portfolio-footer";
 import { PrimaryNav } from "@/components/navigation/primary-nav";
+import {
+  ProjectDivider,
+  ProjectEvidence,
+  ProjectHero,
+  ProjectNextCase,
+  ProjectStatement,
+} from "@/components/projects/case-study";
 import styles from "./quantolab.module.css";
 
 export const metadata: Metadata = {
@@ -19,6 +25,13 @@ const media = {
   methodology: "/images/projects/quantolab/methodology.png",
   mobilePhone: "/images/projects/quantolab/mobile-phone.png",
 } as const;
+
+const heroMetadata = [
+  { label: "ESCALA", value: "28 ferramentas" },
+  { label: "ARQUITETURA", value: "4 domínios de decisão" },
+  { label: "REFERÊNCIAS", value: "referências fiscais 2026" },
+  { label: "NO AR EM", value: "quantolab.com.br", href: "https://quantolab.com.br" },
+] as const;
 
 const summaryItems = [
   ["01", "Arquitetura", "As 28 ferramentas foram agrupadas pelo contexto da decisão, não pelo nome do cálculo."],
@@ -75,43 +88,29 @@ const learnings = [
   ],
 ] as const;
 
-function Divider() {
-  return <div className={styles.divider} aria-hidden="true" />;
-}
-
-function Evidence({ src, alt }: { src: string; alt: string }) {
-  return (
-    <div className={styles.evidence}>
-      <img src={src} alt={alt} />
-    </div>
-  );
-}
-
 export default function QuantoLabPage() {
   return (
     <main id="top" className={styles.page}>
       <PrimaryNav active="work" variant="case" />
 
-      <section className={styles.hero} aria-labelledby="quantolab-title">
-        <Link href="/#work" className={styles.backLink}>
-          ←&nbsp; VOLTAR AOS PROJETOS
-        </Link>
-
-        <div className={styles.heroIntro}>
-          <h1 id="quantolab-title" className={styles.heroTitle}>QuantoLab</h1>
-          <p className={styles.heroSubtitle}>De calculadoras isoladas a um produto organizado por decisões</p>
-          <p className={styles.heroDescriptor}>Produto autoral · Product Strategy, UX/UI, Design System, Implementação</p>
-        </div>
-
-        <Divider />
-
-        <div className={styles.metadataGrid}>
-          <div className={styles.metadataItem}><span>ESCALA</span><p>28 ferramentas</p></div>
-          <div className={styles.metadataItem}><span>ARQUITETURA</span><p>4 domínios de decisão</p></div>
-          <div className={styles.metadataItem}><span>REFERÊNCIAS</span><p>referências fiscais 2026</p></div>
-          <div className={styles.metadataItem}><span>NO AR EM</span><a href="https://quantolab.com.br" target="_blank" rel="noreferrer">quantolab.com.br</a></div>
-        </div>
-      </section>
+      <ProjectHero
+        titleId="quantolab-title"
+        title="QuantoLab"
+        subtitle="De calculadoras isoladas a um produto organizado por decisões"
+        descriptor="Produto autoral · Product Strategy, UX/UI, Design System, Implementação"
+        metadata={heroMetadata}
+        classes={{
+          section: styles.hero,
+          backLink: styles.backLink,
+          intro: styles.heroIntro,
+          title: styles.heroTitle,
+          subtitle: styles.heroSubtitle,
+          descriptor: styles.heroDescriptor,
+          divider: styles.divider,
+          metadataGrid: styles.metadataGrid,
+          metadataItem: styles.metadataItem,
+        }}
+      />
 
       <section className={styles.heroVisualSection} aria-label="QuantoLab em uso">
         <div className={styles.heroVisual}>
@@ -125,7 +124,7 @@ export default function QuantoLabPage() {
             <h2 className={styles.title44}>O QuantoLab começou como uma coleção de calculadoras. A V2 transformou essa base em um sistema de produto.</h2>
             <p className={styles.body17}>As 28 ferramentas passaram a compartilhar arquitetura, padrões de interação e uma lógica comum para apresentar resultados, fontes e próximos passos.</p>
           </div>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
           <div className={styles.threeColumns}>
             {summaryItems.map(([number, title, copy]) => (
               <article className={styles.summaryItem} key={number}>
@@ -144,7 +143,7 @@ export default function QuantoLabPage() {
             <h2 className={styles.title48}>As ferramentas funcionavam. O problema aparecia quando o catálogo crescia.</h2>
             <p className={styles.body17}>Cada calculadora resolvia o próprio cálculo, mas reabria decisões de navegação, conteúdo, formatação e estados. Quanto mais o catálogo crescia, mais essas escolhas se repetiam.</p>
           </div>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
           <div className={styles.threeColumns}>
             <p className={styles.body18}>Padrões mudavam de uma ferramenta para outra.</p>
             <p className={styles.body18}>Uma decisão nem sempre levava naturalmente à próxima.</p>
@@ -154,16 +153,18 @@ export default function QuantoLabPage() {
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.statement}`}>
-        <div className={styles.container}>
-          <h2 className={styles.statementTitle}>Organizar pelo que a pessoa quer decidir, não pelo nome da calculadora.</h2>
-        </div>
-      </section>
+      <ProjectStatement
+        sectionClassName={`${styles.section} ${styles.statement}`}
+        containerClassName={styles.container}
+        titleClassName={styles.statementTitle}
+      >
+        Organizar pelo que a pessoa quer decidir, não pelo nome da calculadora.
+      </ProjectStatement>
 
       <section className={`${styles.section} ${styles.architecture}`}>
         <div className={styles.container}>
           <p className={styles.body17}>Quem chega ao QuantoLab pensa em aceitar uma proposta, abrir um CNPJ ou cobrar um cliente. A arquitetura passou a partir dessas decisões, e não do nome de cada cálculo.</p>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
           <div className={styles.architectureList}>
             {architectureItems.map(([number, title, copy]) => (
               <article className={styles.architectureRow} key={number}>
@@ -175,7 +176,7 @@ export default function QuantoLabPage() {
               </article>
             ))}
           </div>
-          <Evidence src={media.catalog} alt="Catálogo do QuantoLab organizado por domínio" />
+          <ProjectEvidence className={styles.evidence} src={media.catalog} alt="Catálogo do QuantoLab organizado por domínio" />
         </div>
       </section>
 
@@ -185,28 +186,30 @@ export default function QuantoLabPage() {
             <h2 className={styles.title48}>As regras que se repetiam viraram padrões compartilhados.</h2>
             <p className={styles.body17}>Campos, resultados, estados, navegação e formatação numérica passaram a seguir a mesma lógica entre ferramentas. A próxima implementação parte dessa base, em vez de recomeçar.</p>
           </div>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
           <div className={styles.twoColumns}>
             <p className={styles.body18}>Moeda, percentual e valores grandes seguem a mesma regra em todo o produto. Em uma ferramenta de cálculo, formatação inconsistente não é detalhe visual: é dúvida sobre o número.</p>
             <p className={styles.body17}>Durante o cálculo, a interface reduz a presença da marca e prioriza contraste, tipografia, grid e espaço. O lime fica reservado para pontos de atenção.</p>
           </div>
           <div className={styles.evidenceStack}>
-            <Evidence src={media.salaryResult} alt="Resultado de salário líquido no QuantoLab" />
-            <Evidence src={media.cltPj} alt="Comparação CLT e PJ no QuantoLab" />
+            <ProjectEvidence className={styles.evidence} src={media.salaryResult} alt="Resultado de salário líquido no QuantoLab" />
+            <ProjectEvidence className={styles.evidence} src={media.cltPj} alt="Comparação CLT e PJ no QuantoLab" />
           </div>
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.statement}`}>
-        <div className={styles.container}>
-          <h2 className={styles.statementTitle}>Primeiro o resultado. Depois, tudo o que ajuda a conferir.</h2>
-        </div>
-      </section>
+      <ProjectStatement
+        sectionClassName={`${styles.section} ${styles.statement}`}
+        containerClassName={styles.container}
+        titleClassName={styles.statementTitle}
+      >
+        Primeiro o resultado. Depois, tudo o que ajuda a conferir.
+      </ProjectStatement>
 
       <section className={`${styles.section} ${styles.principle}`}>
         <div className={styles.container}>
           <p className={styles.body17}>Em um produto sobre dinheiro, o número precisa aparecer com clareza sem esconder como foi calculado. Resultado, detalhamento, premissas e fontes entram em níveis diferentes da mesma leitura.</p>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
           <div className={styles.threeColumns}>
             {principleSteps.map(([number, title, copy]) => (
               <article className={styles.summaryItem} key={number}>
@@ -217,7 +220,7 @@ export default function QuantoLabPage() {
             ))}
           </div>
           <p className={styles.consequence}>Para sustentar essa hierarquia, lógica de cálculo e conteúdo foram separados, e cada ferramenta passou a declarar suas premissas, fontes e limites.</p>
-          <Evidence src={media.salaryResult} alt="Resultado de salário líquido com detalhamento disponível" />
+          <ProjectEvidence className={styles.evidence} src={media.salaryResult} alt="Resultado de salário líquido com detalhamento disponível" />
         </div>
       </section>
 
@@ -234,7 +237,7 @@ export default function QuantoLabPage() {
                 <h3 className={styles.narrativeTitle}>A home começa pela pergunta, não pela calculadora.</h3>
                 <p className={styles.body17}>A entrada organiza o catálogo pelo que a pessoa quer resolver. Quem prefere explorar pode abrir a lista completa de ferramentas.</p>
               </div>
-              <Evidence src={media.home} alt="Home do QuantoLab orientada pela intenção do usuário" />
+              <ProjectEvidence className={styles.evidence} src={media.home} alt="Home do QuantoLab orientada pela intenção do usuário" />
             </article>
 
             <article className={styles.productMoment}>
@@ -243,8 +246,8 @@ export default function QuantoLabPage() {
                 <p className={styles.body17}>Poucos campos para começar. Depois do cálculo, o resultado assume prioridade e o detalhamento permanece no mesmo contexto.</p>
               </div>
               <div className={styles.evidenceStack}>
-                <Evidence src={media.salaryInput} alt="Entrada da calculadora de salário líquido" />
-                <Evidence src={media.salaryResult} alt="Resultado da calculadora de salário líquido" />
+                <ProjectEvidence className={styles.evidence} src={media.salaryInput} alt="Entrada da calculadora de salário líquido" />
+                <ProjectEvidence className={styles.evidence} src={media.salaryResult} alt="Resultado da calculadora de salário líquido" />
               </div>
             </article>
 
@@ -253,7 +256,7 @@ export default function QuantoLabPage() {
                 <h3 className={styles.narrativeTitle}>Algumas ferramentas precisam comparar, não apenas calcular.</h3>
                 <p className={styles.body17}>Na CLT × PJ, o resultado organiza cenários lado a lado para apoiar a leitura das diferenças.</p>
               </div>
-              <Evidence src={media.cltPj} alt="Comparação de cenários CLT e PJ" />
+              <ProjectEvidence className={styles.evidence} src={media.cltPj} alt="Comparação de cenários CLT e PJ" />
             </article>
 
             <article className={styles.productMoment}>
@@ -262,7 +265,7 @@ export default function QuantoLabPage() {
                 <p className={styles.body17}>Quem precisa conferir encontra metodologia, premissas e fontes depois do resultado. No mobile, a mesma hierarquia é preservada.</p>
               </div>
               <div className={styles.trustEvidence}>
-                <Evidence src={media.methodology} alt="Metodologia, premissas e fontes do QuantoLab" />
+                <ProjectEvidence className={styles.evidence} src={media.methodology} alt="Metodologia, premissas e fontes do QuantoLab" />
                 <img className={styles.mobilePhone} src={media.mobilePhone} alt="QuantoLab em um dispositivo móvel" />
               </div>
             </article>
@@ -301,7 +304,7 @@ export default function QuantoLabPage() {
             <h2 className={styles.title44}>Premissas, limites e fontes ficam perto do resultado.</h2>
             <p className={styles.body17}>Ferramentas financeiras são aproximações. Quando um cálculo depende de regra, taxa ou condição externa, essa informação precisa aparecer onde pode afetar a leitura do número.</p>
           </div>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
           <div className={styles.twoColumns}>
             <p className={styles.body17}>Premissas e exceções entram em hierarquia secundária, ligadas ao resultado que afetam. Quando há uma fonte oficial, ela fica disponível para conferência.</p>
             <div className={styles.limitEmphasis}>
@@ -315,7 +318,7 @@ export default function QuantoLabPage() {
       <section className={`${styles.section} ${styles.learnings}`}>
         <div className={styles.container}>
           <h2 className={styles.title44}>Três aprendizados vieram da passagem de calculadoras isoladas para um sistema.</h2>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
           <div className={styles.threeColumns}>
             {learnings.map(([number, title, copy]) => (
               <article className={styles.learningItem} key={number}>
@@ -336,19 +339,17 @@ export default function QuantoLabPage() {
             <span>ACESSAR</span>
             <a href="https://quantolab.com.br" target="_blank" rel="noreferrer">quantolab.com.br ↗</a>
           </div>
-          <Divider />
+          <ProjectDivider className={styles.divider} />
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.nextCase}`} aria-label="Próximo projeto">
-        <div className={styles.container}>
-          <div className={styles.nextCaseRow}>
-            <h2>Design System</h2>
-            <span>PRÓXIMO&nbsp; ↗</span>
-          </div>
-          <Divider />
-        </div>
-      </section>
+      <ProjectNextCase
+        sectionClassName={`${styles.section} ${styles.nextCase}`}
+        containerClassName={styles.container}
+        rowClassName={styles.nextCaseRow}
+        title="Design System"
+        dividerClassName={styles.divider}
+      />
 
       <div className={styles.footerShell}>
         <PortfolioFooter />

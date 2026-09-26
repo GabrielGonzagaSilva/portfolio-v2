@@ -52,6 +52,7 @@
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -3px;
+  animation: heroTextIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .role {
@@ -64,6 +65,7 @@
   line-height: normal;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+  animation: heroTextIn 480ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
 }
 
 .statement {
@@ -73,6 +75,19 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
+  animation: heroTextIn 480ms cubic-bezier(0.22, 1, 0.36, 1) 150ms both;
+}
+
+@keyframes heroTextIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .work {
@@ -132,5 +147,13 @@
     grid-template-columns: 1fr;
     gap: 24px;
     padding-bottom: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title,
+  .role,
+  .statement {
+    animation: none;
   }
 }

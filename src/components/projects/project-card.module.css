@@ -1,0 +1,66 @@
+.card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--portfolio-space-16);
+  color: inherit;
+}
+
+.media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 29 / 17;
+  overflow: hidden;
+  border-radius: var(--portfolio-radius-card);
+  background: var(--portfolio-color-placeholder);
+}
+
+.placeholder {
+  background: var(--portfolio-color-placeholder);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--portfolio-space-6);
+  overflow: hidden;
+}
+
+.content h2 {
+  margin: 0;
+  color: var(--portfolio-color-text-primary);
+  font-family: var(--portfolio-font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--portfolio-color-text-secondary);
+  font-family: var(--portfolio-font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.year {
+  flex: 0 0 auto;
+  color: var(--portfolio-color-text-tertiary);
+  font-size: 10px;
+}
+
+.card[href]:focus-visible {
+  outline: 2px solid var(--portfolio-color-text-accent);
+  outline-offset: 6px;
+  border-radius: var(--portfolio-radius-card);
+}

@@ -1,0 +1,40 @@
+name: Version Figma Home assets
+
+on:
+  push:
+    branches: [feat/figma-scalable-foundation]
+
+permissions:
+  contents: write
+
+jobs:
+  version-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/figma-scalable-foundation
+
+      - name: Download exact Figma exports
+        run: |
+          set -euo pipefail
+          mkdir -p public/images/projects/quantolab public/images/projects/roteiro-do-sul
+          curl --fail --location --retry 3 --output public/images/projects/quantolab/home-card.png \
+            "https://www.figma.com/api/mcp/asset/0df2a1ac-b9c3-44a6-ab18-a6968eb92d9e/5d0f4.png"
+          curl --fail --location --retry 3 --output public/images/projects/roteiro-do-sul/home-card.png \
+            "https://www.figma.com/api/mcp/asset/0df2a1ac-b9c3-44a6-ab18-a6968eb92d9e/4b556.png"
+          test -s public/images/projects/quantolab/home-card.png
+          test -s public/images/projects/roteiro-do-sul/home-card.png
+
+      - name: Commit versioned assets and remove one-off workflow
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm .github/workflows/sync-figma-home-assets.yml
+          git add public/images/projects/quantolab/home-card.png \
+                  public/images/projects/roteiro-do-sul/home-card.png \
+                  .github/workflows/sync-figma-home-assets.yml
+          git commit -m "chore: version Home assets from Figma"
+          git push origin HEAD:feat/figma-scalable-foundation

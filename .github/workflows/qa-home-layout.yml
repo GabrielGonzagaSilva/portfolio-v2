@@ -1,6 +1,7 @@
 name: QA Home against Figma
 
 on:
+  workflow_dispatch:
   push:
     branches: [feat/figma-scalable-foundation]
 
@@ -14,23 +15,22 @@ jobs:
         with:
           node-version: 24
       - run: npm install
-      - run: npm run build
       - name: Install QA browser dependencies
         run: |
-          npm install --no-save playwright@1.55.0 pngjs@7 pixelmatch@7
+          npm install --no-save --package-lock=false playwright@1.55.0 pngjs@7 pixelmatch@7
           npx playwright install --with-deps chromium
       - name: Start app
         run: |
-          npm run start -- -p 3000 > /tmp/portfolio.log 2>&1 &
-          for i in {1..30}; do curl -fsS http://127.0.0.1:3000/ >/dev/null && exit 0; sleep 1; done
+          npm run dev > /tmp/portfolio.log 2>&1 &
+          for i in {1..60}; do curl -fsS http://127.0.0.1:3000/ >/dev/null && exit 0; sleep 1; done
           cat /tmp/portfolio.log
           exit 1
       - name: Download Figma references
         run: |
           mkdir -p qa-output
-          curl -fsSL 'https://www.figma.com/api/mcp/asset/f203735e-08ef-4adc-9f80-4d817a0b114d.png' -o qa-output/figma-desktop.png
-          curl -fsSL 'https://www.figma.com/api/mcp/asset/65cc5c8e-97a1-463d-9962-907253899961.png' -o qa-output/figma-tablet.png
-          curl -fsSL 'https://www.figma.com/api/mcp/asset/51dda5c7-0aac-46a8-a8ef-86c752166a92.png' -o qa-output/figma-mobile.png
+          curl -fsSL 'https://www.figma.com/api/mcp/asset/971f75b0-8d13-4c06-b4e8-318bf041edf3.png' -o qa-output/figma-desktop.png
+          curl -fsSL 'https://www.figma.com/api/mcp/asset/bce8fc80-9a0e-429f-af2f-9eddd9b94390.png' -o qa-output/figma-tablet.png
+          curl -fsSL 'https://www.figma.com/api/mcp/asset/c45d195a-ab05-4e9a-9f0c-b19510dadca3.png' -o qa-output/figma-mobile.png
       - name: Measure and compare
         run: |
           node <<'NODE'
@@ -97,8 +97,6 @@ jobs:
                 fs.writeFileSync(`qa-output/diff-${c.name}.png`,PNG.sync.write(diff));
                 const ratio=mismatched/(ref.width*ref.height);
                 console.log('pixelMismatchRatio',round(ratio*100)+'%');
-              } else {
-                console.log('pixelCompareSkipped', {figma:[ref.width,ref.height], web:[web.width,web.height]});
               }
               const geomKeys=['page','header','nav','hero','work','footer'];
               for(const k of geomKeys) if(delta(m[k],c.expected[k]).some(v=>Math.abs(v)>1)) failed=true;

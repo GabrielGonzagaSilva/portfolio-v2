@@ -51,7 +51,6 @@
   font-size: 96px;
   font-weight: 700;
   line-height: 1.05;
-  letter-spacing: -0.035em;
 }
 
 .role {
@@ -61,7 +60,7 @@
   font-family: var(--portfolio-font-mono);
   font-size: 12px;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: normal;
   text-transform: uppercase;
 }
 
@@ -98,7 +97,6 @@
 
   .title {
     font-size: 64px;
-    letter-spacing: -0.03em;
   }
 
   .statement {
@@ -122,7 +120,6 @@
 
   .title {
     font-size: 42px;
-    letter-spacing: -0.025em;
   }
 
   .statement {

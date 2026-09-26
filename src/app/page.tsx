@@ -7,7 +7,7 @@ import styles from "./home.module.css";
 export default function Home() {
   return (
     <main id="top" className={styles.page}>
-      <PrimaryNav active="work" />
+      <PrimaryNav active="home" />
 
       <section className={styles.hero} aria-labelledby="home-title">
         <div className={styles.identity}>

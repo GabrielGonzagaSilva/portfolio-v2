@@ -1,5 +1,33 @@
-/* Shared entrance motion for portfolio project heroes.
+/* Shared project-hero layout and entrance motion.
    Structural selectors keep the behavior reusable across future case-study routes. */
+
+/* Keep every hero element on the same 1200px content axis.
+   The previous fixed 120px gutter + fixed 1200px children only aligned at 1440px. */
+main#top > section:has(> a[href="/#work"]) {
+  padding-inline: max(120px, calc((100vw - 1200px) / 2));
+}
+
+main#top > section:has(> a[href="/#work"]) > div:first-of-type,
+main#top > section:has(> a[href="/#work"]) > div:last-child {
+  width: 100%;
+  max-width: 1200px;
+}
+
+main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 {
+  width: min(993.33px, 100%);
+}
+
+main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p {
+  width: min(786.67px, 100%);
+}
+
+main#top > section:has(> a[href="/#work"]) > div:first-of-type > h1 + p + p {
+  width: min(620px, 100%);
+}
+
+main#top > section:has(> a[href="/#work"]) > div:last-child {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
 
 main#top > section:has(> a[href="/#work"]) > a[href="/#work"] {
   animation: projectHeroReveal 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -63,6 +91,22 @@ main#top > section:has(> a[href="/#work"]) + section {
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (max-width: 1024px) {
+  main#top > section:has(> a[href="/#work"]) {
+    padding-inline: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  main#top > section:has(> a[href="/#work"]) {
+    padding-inline: 24px;
+  }
+
+  main#top > section:has(> a[href="/#work"]) > div:last-child {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -1,162 +1,358 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BrandLight } from "@/components/brand-light";
-import { SiteHeader } from "@/components/site-header";
+import { PortfolioFooter } from "@/components/layout/portfolio-footer";
+import { PrimaryNav } from "@/components/navigation/primary-nav";
+import styles from "./quantolab.module.css";
 
 export const metadata: Metadata = {
-  title: "QuantoLab — Case",
-  description: "Case de Product Design do QuantoLab: de uma coleção de calculadoras a um sistema de decisão.",
+  title: "QuantoLab",
+  description: "Case de Product Design do QuantoLab, da coleção de calculadoras a um sistema organizado por decisões.",
 };
 
-const asset = (name: string) => `https://www.figma.com/api/mcp/asset/4e3c83ab-694b-4168-9c90-26d18e789486/${name}`;
-
 const media = {
-  home: asset("ee972.png"),
-  salaryResult: asset("d7d02.png"),
-  assumptions: asset("037c5.png"),
-  catalog: asset("77fe3.png"),
-  system: asset("97ac2.png"),
-  discover: asset("fbb93.png"),
-  salaryInput: asset("4a700.png"),
-  cltInput: asset("0c707.png"),
-  cltResult: asset("65c05.png"),
-  methodology: asset("5103a.png"),
-  guide: asset("78b76.png"),
-  mobile: asset("03f95.png"),
-  closing: asset("bd1d3.png"),
+  hero: "/images/projects/quantolab/hero.png",
+  catalog: "/images/projects/quantolab/catalog.png",
+  salaryResult: "/images/projects/quantolab/salary-result.png",
+  cltPj: "/images/projects/quantolab/clt-pj.png",
+  home: "/images/projects/quantolab/home.png",
+  salaryInput: "/images/projects/quantolab/salary-input.png",
+  methodology: "/images/projects/quantolab/methodology.png",
+  mobilePhone: "/images/projects/quantolab/mobile-phone.png",
 } as const;
 
-const architecture = [
-  ["01", "Dois modos de interface.", "A home e as calculadoras estavam competindo por regras incompatíveis, então separei as duas. No modo apresentação, a interface posiciona o produto e ajuda na descoberta. No modo operação, ela quase desaparece: legibilidade, hierarquia, previsibilidade e o menor esforço cognitivo possível."],
-  ["02", "Um esqueleto previsível.", "Entrada, processamento, resultado, interpretação, próxima ação. Depois de usar duas ferramentas, o usuário sabe operar a terceira. É essa previsibilidade que permite crescer sem reprojetar navegação."],
-  ["03", "Ferramenta e guia, pareados.", "Uma calculadora mostra a conta, mas não explica o que entra, o que fica de fora e como ler o resultado. Cada domínio tem ferramentas e guias, com uma página de metodologia que documenta premissas e fontes primárias."],
+const summaryItems = [
+  ["01", "Arquitetura", "As 28 ferramentas foram agrupadas pelo contexto da decisão, não pelo nome do cálculo."],
+  ["02", "Sistema", "Campos, estados, resultados e formatação passaram a seguir padrões compartilhados."],
+  ["03", "Confiança", "Resultado, fórmula, premissas e fontes convivem no mesmo fluxo, com prioridades diferentes."],
 ] as const;
 
-const learnings = [
-  ["01", "Escalar produto não é adicionar funcionalidade.", "Quanto mais ferramentas existem, maior precisa ser a qualidade do sistema que conecta todas elas, e esse sistema é invisível ao usuário exatamente quando está funcionando."],
-  ["02", "Confiança se projeta, não se declara.", "Nenhum selo de credibilidade vale o que vale mostrar a fórmula, deixar a premissa editável e escrever o que a ferramenta não sabe."],
-  ["03", "Personalidade não precisa competir com a tarefa.", "A escolha entre expressividade e eficiência quase sempre é falsa. O que falta é decidir onde cada uma manda."],
+const architectureItems = [
+  [
+    "01",
+    "Descoberta e cálculo pedem ritmos diferentes.",
+    "A home orienta e apresenta possibilidades. Dentro das ferramentas, a interface reduz distrações e prioriza entrada, resultado e conferência.",
+  ],
+  [
+    "02",
+    "Depois da primeira ferramenta, as próximas precisam ser familiares.",
+    "Entrada → resultado → explicação → próximo passo. A sequência se repete para reduzir reaprendizado entre ferramentas.",
+  ],
+  [
+    "03",
+    "Contexto aparece quando ajuda a decidir.",
+    "Metodologia, fontes e guias ficam disponíveis quando acrescentam contexto, sem disputar atenção com o cálculo principal.",
+  ],
+] as const;
+
+const principleSteps = [
+  ["01", "Calcular", "O resultado principal aparece primeiro, sem competir com explicações."],
+  ["02", "Conferir", "Fórmula, premissas, detalhamento e fontes ficam logo abaixo para quem quiser validar a conta."],
+  ["03", "Continuar", "Quando existe uma próxima decisão relacionada, ela aparece como continuidade, não como obrigação."],
 ] as const;
 
 const beforeAfter = [
-  ["Modelo mental", "Coleção de calculadoras", "Sistema de decisão por domínio"],
-  ["Organização", "Por tipo de cálculo", "Pela situação do usuário"],
-  ["Consistência", "Decidida por página", "Definida no sistema"],
-  ["Transparência", "Resultado sem procedência", "Fórmula, premissa e fonte acessíveis"],
-  ["Marca e eficiência", "Em conflito na mesma tela", "Separadas em modos explícitos"],
-  ["Custo de expansão", "Crescente a cada ferramenta", "Padrões prontos, custo estável"],
+  ["Modelo mental", "Coleção de calculadoras", "Sistema por contexto de decisão"],
+  ["Navegação", "Ferramenta isolada", "Próxima decisão conectada"],
+  ["Consistência", "Regras por página", "Padrões compartilhados"],
+  ["Confiança", "Resultado opaco", "Fórmula, premissas e fonte acessíveis"],
 ] as const;
 
-function CaseMedia({ label, description, src, className = "" }: { label: string; description: string; src: string; className?: string }) {
+const learnings = [
+  [
+    "01",
+    "Quando o catálogo cresce, o sistema pesa mais que a tela.",
+    "Com muitas ferramentas, repetir decisões de navegação, estados e formatação custa mais do que desenhar uma tela específica.",
+  ],
+  [
+    "02",
+    "Em finanças, confiança precisa ser verificável.",
+    "Mostrar fórmula, premissas, fonte e limites é mais útil do que apenas afirmar que o resultado é confiável.",
+  ],
+  [
+    "03",
+    "Nem toda parte do produto precisa ter a mesma intensidade visual.",
+    "A marca pode aparecer mais na descoberta e recuar durante o cálculo, quando clareza e leitura precisam dominar.",
+  ],
+] as const;
+
+function Divider() {
+  return <div className={styles.divider} aria-hidden="true" />;
+}
+
+function Evidence({ src, alt }: { src: string; alt: string }) {
   return (
-    <figure className={`case-media ${className}`}>
-      <figcaption><span className="eyebrow accent">{label}</span><p>{description}</p></figcaption>
-      {/* Temporary Figma MCP asset; replace by local versioned export before production. */}
-      <div className="case-media-frame"><img src={src} alt={description} /></div>
-    </figure>
+    <div className={styles.evidence}>
+      <img src={src} alt={alt} />
+    </div>
   );
 }
 
 export default function QuantoLabPage() {
   return (
-    <main className="case-page">
-      <SiteHeader />
+    <main id="top" className={styles.page}>
+      <PrimaryNav active="work" variant="case" />
 
-      <section className="case-hero">
-        <BrandLight />
-        <div className="site-container case-hero-shell">
-          <Link href="/#projetos" className="back-link">← VOLTAR AOS PROJETOS</Link>
-          <div className="case-hero-title"><h1>QuantoLab</h1><h2>De uma coleção de calculadoras a um sistema de decisão</h2><p>Produto autoral · Product Strategy, UX/UI, Design System, Implementação</p></div>
-          <div className="case-rail-row"><div /><div><p className="case-lead">Existem centenas de calculadoras online, e quase todas entregam um número sem mostrar de onde ele veio. O QuantoLab foi construído na decisão oposta: o resultado aparece primeiro, e a conta fica aberta.</p><p>Meu trabalho foi transformar essa posição em arquitetura de produto, um sistema em que 28 ferramentas se comportam como um só produto e cada ferramenta nova nasce de padrões já definidos.</p></div></div>
+      <section className={styles.hero} aria-labelledby="quantolab-title">
+        <Link href="/#work" className={styles.backLink}>
+          ←&nbsp; VOLTAR AOS PROJETOS
+        </Link>
+
+        <div className={styles.heroIntro}>
+          <h1 id="quantolab-title" className={styles.heroTitle}>QuantoLab</h1>
+          <p className={styles.heroSubtitle}>De calculadoras isoladas a um produto organizado por decisões</p>
+          <p className={styles.heroDescriptor}>Produto autoral · Product Strategy, UX/UI, Design System, Implementação</p>
+        </div>
+
+        <Divider />
+
+        <div className={styles.metadataGrid}>
+          <div className={styles.metadataItem}><span>ESCALA</span><p>28 ferramentas</p></div>
+          <div className={styles.metadataItem}><span>ARQUITETURA</span><p>4 domínios de decisão</p></div>
+          <div className={styles.metadataItem}><span>REFERÊNCIAS</span><p>referências fiscais 2026</p></div>
+          <div className={styles.metadataItem}><span>NO AR EM</span><a href="https://quantolab.com.br" target="_blank" rel="noreferrer">quantolab.com.br</a></div>
         </div>
       </section>
 
-      <section className="case-overview case-alt">
-        <div className="site-container two-media-grid">
-          <CaseMedia label="PRODUTO · HOMEPAGE" description="Abertura real do QuantoLab com posicionamento, navegação e instrumento em uso." src={media.home} />
-          <CaseMedia label="PRODUTO · RESULTADO" description="Cálculo real de salário líquido com INSS, IRRF e valor disponível em destaque." src={media.salaryResult} />
+      <section className={styles.heroVisualSection} aria-label="QuantoLab em uso">
+        <div className={styles.heroVisual}>
+          <img src={media.hero} alt="Composição visual do produto QuantoLab" />
         </div>
       </section>
 
-      <section className="case-section">
-        <div className="site-container case-rail-row"><div /><div><h2>O produto cresceu mais rápido do que a estrutura que o sustentava.</h2><p>O projeto começou como um punhado de calculadoras funcionais e cresceu rápido demais para a estrutura que tinha. Cada ferramenta nova era desenhada por conta própria: resolvia bem o seu cálculo e ignorava as outras.</p></div></div>
-        <div className="site-container case-evidence-grid"><p>Ferramentas do mesmo produto formatavam moeda de jeitos diferentes.</p><p>Quem calculava salário líquido não tinha caminho até a comparação CLT x PJ, que é a pergunta seguinte óbvia.</p><p>Cada instrumento novo reabria decisões já tomadas três vezes.</p></div>
-        <div className="site-container case-rail-row compact"><div /><div><p className="accent-callout">A V2 partiu daí. Em vez de redesenhar telas, construir o sistema que as sustenta.</p></div></div>
-      </section>
-
-      <section className="case-section case-alt">
-        <div className="site-container case-rail-row"><div /><div><h2>O resultado vem primeiro. A conta fica aberta.</h2><p>A tentação óbvia em um produto sobre dinheiro é provar credibilidade antecipando explicação. O efeito é o contrário do pretendido: explicação na frente do resultado lê como desculpa, e o usuário aprende a rolar sem ler.</p></div></div>
-        <div className="site-container three-step-grid">
-          <article><span className="eyebrow">01</span><h3>Calcular.</h3><p>O número principal tem prioridade visual absoluta e chega antes do detalhamento técnico.</p></article>
-          <article><span className="eyebrow">02</span><h3>Conferir.</h3><p>Composição, fórmula e fonte oficial ficam logo abaixo, para quem quiser abrir. Premissas voláteis ficam editáveis.</p></article>
-          <article><span className="eyebrow">03</span><h3>Continuar.</h3><p>Ferramentas relacionadas conectam uma conta à próxima, sem criar fluxo obrigatório.</p></article>
-        </div>
-        <div className="site-container case-rail-row compact"><div /><div><p className="case-medium">Toda ferramenta passou a precisar de uma fonte declarável, e a lógica de cálculo foi implementada separada do texto editorial para poder ser testada de forma independente. Transparência aqui não é selo. É custo de manutenção que o produto assume.</p><CaseMedia label="PRINCÍPIO · CONTA ABERTA" description="Premissas, limites e fontes permanecem acessíveis depois do resultado." src={media.assumptions} className="wide-media" /></div></div>
-      </section>
-
-      <section className="case-section">
-        <div className="site-container case-rail-row"><div /><div><h2>A unidade é a decisão, não o cálculo.</h2><p>O catálogo se organiza por situação: CLT, PJ, freelancer, financeiro. Quem chega não procura “uma calculadora de INSS”. Está decidindo se aceita uma proposta, se abre um CNPJ, quanto cobrar de um cliente novo. A pergunta vem antes do instrumento.</p></div></div>
-        <div className="site-container numbered-rows">{architecture.map(([n, title, text]) => <article key={n}><div><span className="eyebrow">{n}</span><h3>{title}</h3></div><p>{text}</p></article>)}</div>
-        <div className="site-container case-rail-row compact"><div /><div><CaseMedia label="ARQUITETURA · CATÁLOGO" description="As 28 ferramentas organizadas por domínio e contexto de decisão." src={media.catalog} className="wide-media" /></div></div>
-      </section>
-
-      <section className="case-section case-alt">
-        <div className="site-container case-rail-row"><div /><div><h2>Com 28 ferramentas, consistência deixa de ser questão estética e vira questão de custo.</h2><p>Campos, seletores, blocos de resultado, indicadores, estados, alertas, navegação, hierarquia tipográfica e comportamento responsivo viraram padrões reutilizáveis.</p></div></div>
-        <div className="site-container case-rail-row compact"><div /><div><p className="case-medium">Formatação numérica ganhou tratamento próprio. Moeda, percentual e valores grandes seguem a mesma regra em todo o produto, porque em ferramenta de cálculo uma inconsistência de formatação não é detalhe visual. É dúvida sobre o número.</p></div></div>
-        <div className="site-container system-copy-grid"><p>A base visual é neutra, com preto, off-white e uma escala de cinzas, e o lime como cor de assinatura, usado com parcimônia para funcionar como marcador de atenção.</p><p>Ficaram de fora glassmorphism, gradientes em excesso, glow, bento grids decorativos e dashboards mais complexos que a tarefa.</p></div>
-        <div className="site-container case-rail-row compact"><div /><div><CaseMedia label="SISTEMA · PRÓXIMA DECISÃO" description="Padrões conectam cada resultado a um próximo passo sem quebrar a hierarquia." src={media.system} className="wide-media" /></div></div>
-      </section>
-
-      <section className="case-screens">
-        <div className="site-container">
-          <div className="case-rail-row"><div /><div><h2>Do primeiro contato à próxima decisão.</h2><p>As telas mostram como descoberta, cálculo, comparação, confiança e responsividade funcionam como partes do mesmo sistema.</p></div></div>
-
-          <div className="narrative-head"><span>01 · DESCOBRIR</span><div><h3>A pergunta vem antes da ferramenta.</h3><p>A home orienta pela dúvida; o catálogo amplia a descoberta sem exigir que a pessoa saiba o nome do cálculo.</p></div></div>
-          <div className="discover-grid"><CaseMedia label="HOME · DESCOBERTA" description="Quatro caminhos de entrada traduzem intenção em ferramenta." src={media.discover} /><CaseMedia label="CATÁLOGO · 28 FERRAMENTAS" description="A arquitetura cresce por domínio sem perder orientação." src={media.catalog} /></div>
-
-          <div className="narrative-head"><span>02 · CALCULAR</span><div><h3>Entrada e resultado formam uma única operação.</h3><p>O formulário é direto; depois do cálculo, o número principal assume prioridade e o detalhamento continua acessível.</p></div></div>
-          <div className="two-media-grid"><CaseMedia label="SALÁRIO · ENTRADA" description="Poucos campos, hierarquia clara e cálculo no navegador." src={media.salaryInput} /><CaseMedia label="SALÁRIO · RESULTADO" description="Resultado principal, descontos e composição permanecem no mesmo contexto." src={media.salaryResult} /></div>
-
-          <div className="narrative-head"><span>03 · DECIDIR</span><div><h3>A conta vira comparação entre cenários.</h3><p>No CLT x PJ, a interface deixa de mostrar apenas um número e passa a sustentar uma decisão com contexto e próximos passos.</p></div></div>
-          <div className="two-media-grid"><CaseMedia label="CLT × PJ · ENTRADA" description="O cenário começa pelo pacote real, não só pelo salário." src={media.cltInput} /><CaseMedia label="CLT × PJ · RESULTADO" description="A comparação conduz à próxima decisão sem encerrar o fluxo." src={media.cltResult} /></div>
-
-          <div className="narrative-head"><span>04 · CONFIAR</span><div><h3>A explicação existe fora do momento de cálculo.</h3><p>Metodologia e conteúdo editorial deixam premissas, fontes e limites verificáveis sem disputar atenção com a operação.</p></div></div>
-          <div className="trust-grid">
-            <div><CaseMedia label="METODOLOGIA · FONTES" description="Premissas, limitações e fontes oficiais ficam documentadas em uma camada própria." src={media.methodology} /><CaseMedia label="GUIA · SALÁRIO LÍQUIDO 2026" description="Conteúdo editorial aprofunda o contexto e conecta a ferramenta a uma referência consultável." src={media.guide} /></div>
-            <div className="mobile-story"><span className="eyebrow accent">05 · RESPONSIVO</span><h3>A hierarquia sobrevive à mudança de contexto.</h3><p>No mobile, entrada, resultado e leitura mantêm a mesma ordem sem comprimir a hierarquia.</p><div className="phone"><img src={media.mobile} alt="QuantoLab responsivo em dispositivo móvel" /></div></div>
+      <section className={`${styles.section} ${styles.summary}`}>
+        <div className={styles.container}>
+          <div className={styles.introBlock}>
+            <h2 className={styles.title44}>O QuantoLab começou como uma coleção de calculadoras. A V2 transformou essa base em um sistema de produto.</h2>
+            <p className={styles.body17}>As 28 ferramentas passaram a compartilhar arquitetura, padrões de interação e uma lógica comum para apresentar resultados, fontes e próximos passos.</p>
           </div>
-          <div className="closing-visual"><span className="eyebrow accent">FECHAMENTO · PRODUTO</span><h3>O sistema termina devolvendo a pessoa à próxima decisão.</h3><p>O fechamento retoma a pergunta inicial e devolve a pessoa ao catálogo com um próximo passo claro.</p><div><img src={media.closing} alt="Fechamento do produto QuantoLab" /></div></div>
+          <Divider />
+          <div className={styles.threeColumns}>
+            {summaryItems.map(([number, title, copy]) => (
+              <article className={styles.summaryItem} key={number}>
+                <span className={styles.number}>{number}</span>
+                <h3 className={styles.cardTitle}>{title}</h3>
+                <p className={styles.body15}>{copy}</p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="case-section">
-        <div className="site-container case-rail-row"><div /><div><h2>A entrega principal não foi uma interface nova. Foi o sistema que permite a próxima.</h2><p>O que funcionava como coleção de páginas independentes passou a ter uma lógica de produto. Cada instrumento novo parte de princípios já definidos de arquitetura, interação, formatação, acessibilidade e comportamento.</p></div></div>
+      <section className={`${styles.section} ${styles.problem}`}>
+        <div className={styles.container}>
+          <div className={styles.introBlock}>
+            <h2 className={styles.title48}>As ferramentas funcionavam. O problema aparecia quando o catálogo crescia.</h2>
+            <p className={styles.body17}>Cada calculadora resolvia o próprio cálculo, mas reabria decisões de navegação, conteúdo, formatação e estados. Quanto mais o catálogo crescia, mais essas escolhas se repetiam.</p>
+          </div>
+          <Divider />
+          <div className={styles.threeColumns}>
+            <p className={styles.body18}>Padrões mudavam de uma ferramenta para outra.</p>
+            <p className={styles.body18}>Uma decisão nem sempre levava naturalmente à próxima.</p>
+            <p className={styles.body18}>Novas páginas repetiam escolhas que já tinham sido feitas.</p>
+          </div>
+          <p className={styles.direction}>A V2 passou a tratar navegação, interação e conteúdo como decisões de produto, não como ajustes de página.</p>
+        </div>
       </section>
 
-      <section className="case-section case-alt">
-        <div className="site-container case-rail-row"><div /><div><h2>Limites, e por que são parte do design</h2><p>Um produto que fala de salário, imposto e rescisão precisa ser explícito sobre o que não sabe.</p></div></div>
-        <div className="site-container case-rail-row compact"><div /><div className="paragraph-stack"><p>A comparação CLT x PJ se declara uma equivalência financeira aproximada, e não uma afirmação de que os contratos têm o mesmo risco. A ferramenta de hora extra informa que reflexos em DSR, férias, 13º, FGTS e convenção coletiva não entram automaticamente.</p><p>O desafio foi posicionar essas ressalvas onde elas informam sem virar ruído: perto do resultado a que se referem, em hierarquia secundária, redigidas como informação útil e não como blindagem jurídica.</p><p className="accent-callout">Na mesma direção, o produto não exige cadastro. Não pedir dado desnecessário ao cálculo é decisão de confiança tanto quanto mostrar a fórmula.</p></div></div>
+      <section className={`${styles.section} ${styles.statement}`}>
+        <div className={styles.container}>
+          <h2 className={styles.statementTitle}>Organizar pelo que a pessoa quer decidir, não pelo nome da calculadora.</h2>
+        </div>
       </section>
 
-      <section className="case-section">
-        <div className="site-container case-rail-row"><div /><div><h2>De coleção de páginas para sistema de decisão</h2></div></div>
-        <div className="site-container before-after"><div className="ba-head"><span>DIMENSÃO</span><span>ANTES</span><span>DEPOIS</span></div>{beforeAfter.map(([dimension, before, after]) => <div className="ba-row" key={dimension}><strong>{dimension}</strong><span>{before}</span><span>{after}</span></div>)}</div>
+      <section className={`${styles.section} ${styles.architecture}`}>
+        <div className={styles.container}>
+          <p className={styles.body17}>Quem chega ao QuantoLab pensa em aceitar uma proposta, abrir um CNPJ ou cobrar um cliente. A arquitetura passou a partir dessas decisões, e não do nome de cada cálculo.</p>
+          <Divider />
+          <div className={styles.architectureList}>
+            {architectureItems.map(([number, title, copy]) => (
+              <article className={styles.architectureRow} key={number}>
+                <div className={styles.architectureRail}>
+                  <span className={styles.number}>{number}</span>
+                  <h3 className={styles.rowTitle}>{title}</h3>
+                </div>
+                <p className={styles.body16}>{copy}</p>
+              </article>
+            ))}
+          </div>
+          <Evidence src={media.catalog} alt="Catálogo do QuantoLab organizado por domínio" />
+        </div>
       </section>
 
-      <section className="case-section case-alt">
-        <div className="site-container case-rail-row"><div /><div><h2>Escalar produto é projetar o sistema invisível que conecta tudo.</h2></div></div>
-        <div className="site-container numbered-rows learnings">{learnings.map(([n, title, text]) => <article key={n}><div><span className="eyebrow">{n}</span><h3>{title}</h3></div><p>{text}</p></article>)}</div>
+      <section className={`${styles.section} ${styles.system}`}>
+        <div className={styles.container}>
+          <div className={styles.introBlock}>
+            <h2 className={styles.title48}>As regras que se repetiam viraram padrões compartilhados.</h2>
+            <p className={styles.body17}>Campos, resultados, estados, navegação e formatação numérica passaram a seguir a mesma lógica entre ferramentas. A próxima implementação parte dessa base, em vez de recomeçar.</p>
+          </div>
+          <Divider />
+          <div className={styles.twoColumns}>
+            <p className={styles.body18}>Moeda, percentual e valores grandes seguem a mesma regra em todo o produto. Em uma ferramenta de cálculo, formatação inconsistente não é detalhe visual: é dúvida sobre o número.</p>
+            <p className={styles.body17}>Durante o cálculo, a interface reduz a presença da marca e prioriza contraste, tipografia, grid e espaço. O lime fica reservado para pontos de atenção.</p>
+          </div>
+          <div className={styles.evidenceStack}>
+            <Evidence src={media.salaryResult} alt="Resultado de salário líquido no QuantoLab" />
+            <Evidence src={media.cltPj} alt="Comparação CLT e PJ no QuantoLab" />
+          </div>
+        </div>
       </section>
 
-      <section className="case-section">
-        <div className="site-container case-rail-row"><div /><div><h2>Evoluir o sistema sem perder previsibilidade.</h2><p>Ampliação do catálogo, evolução do sistema de descoberta, testes de usabilidade nas ferramentas de maior tráfego, expansão do design system e definição de métricas para acompanhar quais decisões o usuário efetivamente conclui.</p></div></div>
+      <section className={`${styles.section} ${styles.statement}`}>
+        <div className={styles.container}>
+          <h2 className={styles.statementTitle}>Primeiro o resultado. Depois, tudo o que ajuda a conferir.</h2>
+        </div>
       </section>
 
-      <section className="case-closing">
-        <div className="site-container"><h2>Faça as contas antes de decidir.</h2><p>Product Strategy · UX/UI · Design System · Product Development</p><div className="case-access"><span>ACESSAR</span><a href="https://quantolab.com.br" target="_blank" rel="noreferrer">quantolab.com.br ↗</a></div></div>
+      <section className={`${styles.section} ${styles.principle}`}>
+        <div className={styles.container}>
+          <p className={styles.body17}>Em um produto sobre dinheiro, o número precisa aparecer com clareza sem esconder como foi calculado. Resultado, detalhamento, premissas e fontes entram em níveis diferentes da mesma leitura.</p>
+          <Divider />
+          <div className={styles.threeColumns}>
+            {principleSteps.map(([number, title, copy]) => (
+              <article className={styles.summaryItem} key={number}>
+                <span className={styles.number}>{number}</span>
+                <h3 className={styles.cardTitle}>{title}</h3>
+                <p className={styles.body15}>{copy}</p>
+              </article>
+            ))}
+          </div>
+          <p className={styles.consequence}>Para sustentar essa hierarquia, lógica de cálculo e conteúdo foram separados, e cada ferramenta passou a declarar suas premissas, fontes e limites.</p>
+          <Evidence src={media.salaryResult} alt="Resultado de salário líquido com detalhamento disponível" />
+        </div>
       </section>
 
-      <section className="next-case"><div className="site-container"><div><h2>Design System</h2><span>PRÓXIMO ↗</span></div></div></section>
+      <section className={`${styles.section} ${styles.productInUse}`}>
+        <div className={styles.container}>
+          <div className={styles.productNarrative}>
+            <div className={styles.productIntro}>
+              <h2 className={styles.title44}>As mesmas regras aparecem em quatro momentos do produto.</h2>
+              <p className={styles.body18}>As telas abaixo mostram como arquitetura, hierarquia e padrões compartilhados se comportam em descoberta, cálculo, comparação e conferência.</p>
+            </div>
+
+            <article className={styles.productMoment}>
+              <div className={styles.momentCopy}>
+                <h3 className={styles.narrativeTitle}>A home começa pela pergunta, não pela calculadora.</h3>
+                <p className={styles.body17}>A entrada organiza o catálogo pelo que a pessoa quer resolver. Quem prefere explorar pode abrir a lista completa de ferramentas.</p>
+              </div>
+              <Evidence src={media.home} alt="Home do QuantoLab orientada pela intenção do usuário" />
+            </article>
+
+            <article className={styles.productMoment}>
+              <div className={styles.momentCopy}>
+                <h3 className={styles.narrativeTitle}>Entrada, resultado e detalhamento ficam no mesmo fluxo.</h3>
+                <p className={styles.body17}>Poucos campos para começar. Depois do cálculo, o resultado assume prioridade e o detalhamento permanece no mesmo contexto.</p>
+              </div>
+              <div className={styles.evidenceStack}>
+                <Evidence src={media.salaryInput} alt="Entrada da calculadora de salário líquido" />
+                <Evidence src={media.salaryResult} alt="Resultado da calculadora de salário líquido" />
+              </div>
+            </article>
+
+            <article className={styles.productMoment}>
+              <div className={styles.momentCopy}>
+                <h3 className={styles.narrativeTitle}>Algumas ferramentas precisam comparar, não apenas calcular.</h3>
+                <p className={styles.body17}>Na CLT × PJ, o resultado organiza cenários lado a lado para apoiar a leitura das diferenças.</p>
+              </div>
+              <Evidence src={media.cltPj} alt="Comparação de cenários CLT e PJ" />
+            </article>
+
+            <article className={styles.productMoment}>
+              <div className={styles.momentCopy}>
+                <h3 className={styles.narrativeTitle}>Premissas e fontes aparecem sem interromper a tarefa.</h3>
+                <p className={styles.body17}>Quem precisa conferir encontra metodologia, premissas e fontes depois do resultado. No mobile, a mesma hierarquia é preservada.</p>
+              </div>
+              <div className={styles.trustEvidence}>
+                <Evidence src={media.methodology} alt="Metodologia, premissas e fontes do QuantoLab" />
+                <img className={styles.mobilePhone} src={media.mobilePhone} alt="QuantoLab em um dispositivo móvel" />
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.result}`}>
+        <div className={styles.container}>
+          <div className={styles.introBlock}>
+            <h2 className={styles.title48}>A V2 consolidou uma base comum para as 28 ferramentas.</h2>
+            <p className={styles.body17}>Arquitetura, interação, formatação e critérios de confiança passaram a seguir uma lógica compartilhada. Novas ferramentas podem partir desses padrões, em vez de reabrir as mesmas decisões.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.beforeAfterSection}`}>
+        <div className={styles.container}>
+          <h2 className={styles.title44}>O que mudou do catálogo para o sistema.</h2>
+          <div className={styles.beforeAfterTable}>
+            <div className={`${styles.beforeAfterRow} ${styles.beforeAfterHeader}`}>
+              <span>DIMENSÃO</span><span>ANTES</span><span>DEPOIS</span>
+            </div>
+            {beforeAfter.map(([dimension, before, after]) => (
+              <div className={styles.beforeAfterRow} key={dimension}>
+                <strong>{dimension}</strong><p>{before}</p><p>{after}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.limits}`}>
+        <div className={styles.container}>
+          <div className={styles.introBlock}>
+            <h2 className={styles.title44}>Premissas, limites e fontes ficam perto do resultado.</h2>
+            <p className={styles.body17}>Ferramentas financeiras são aproximações. Quando um cálculo depende de regra, taxa ou condição externa, essa informação precisa aparecer onde pode afetar a leitura do número.</p>
+          </div>
+          <Divider />
+          <div className={styles.twoColumns}>
+            <p className={styles.body17}>Premissas e exceções entram em hierarquia secundária, ligadas ao resultado que afetam. Quando há uma fonte oficial, ela fica disponível para conferência.</p>
+            <div className={styles.limitEmphasis}>
+              <p className={styles.body17}>O produto também evita pedir dados que não participam do cálculo.</p>
+              <p>Não coletar informação desnecessária também é uma decisão de confiança.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.learnings}`}>
+        <div className={styles.container}>
+          <h2 className={styles.title44}>Três aprendizados vieram da passagem de calculadoras isoladas para um sistema.</h2>
+          <Divider />
+          <div className={styles.threeColumns}>
+            {learnings.map(([number, title, copy]) => (
+              <article className={styles.learningItem} key={number}>
+                <span className={styles.number}>{number}</span>
+                <h3>{title}</h3>
+                <p>{copy}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.closing}`}>
+        <div className={styles.container}>
+          <h2>Faça as contas antes de decidir.</h2>
+          <p className={styles.body17}>Product Strategy · UX/UI · Design System · Product Development</p>
+          <div className={styles.closingLink}>
+            <span>ACESSAR</span>
+            <a href="https://quantolab.com.br" target="_blank" rel="noreferrer">quantolab.com.br ↗</a>
+          </div>
+          <Divider />
+        </div>
+      </section>
+
+      <section className={`${styles.section} ${styles.nextCase}`} aria-label="Próximo projeto">
+        <div className={styles.container}>
+          <div className={styles.nextCaseRow}>
+            <h2>Design System</h2>
+            <span>PRÓXIMO&nbsp; ↗</span>
+          </div>
+          <Divider />
+        </div>
+      </section>
+
+      <div className={styles.footerShell}>
+        <PortfolioFooter />
+      </div>
     </main>
   );
 }

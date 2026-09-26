@@ -6,6 +6,11 @@
   color: inherit;
 }
 
+.card[href] {
+  cursor: pointer;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .media {
   position: relative;
   width: 100%;
@@ -22,6 +27,7 @@
 .image {
   object-fit: contain;
   object-position: center;
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .content {
@@ -39,6 +45,7 @@
   font-size: 16px;
   font-weight: 600;
   line-height: 19px;
+  transition: color 220ms ease;
 }
 
 .meta {
@@ -52,6 +59,7 @@
   font-weight: 400;
   line-height: 16px;
   white-space: nowrap;
+  transition: color 220ms ease;
 }
 
 .year {
@@ -59,10 +67,44 @@
   color: var(--portfolio-color-text-tertiary);
   font-size: 10px;
   line-height: 13px;
+  transition: color 220ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card[href]:hover {
+    transform: translate3d(0, -3px, 0);
+  }
+
+  .card[href]:hover .image {
+    transform: scale(1.015);
+  }
+
+  .card[href]:hover .meta {
+    color: var(--portfolio-color-text-primary);
+  }
+
+  .card[href]:hover .year {
+    color: var(--portfolio-color-text-secondary);
+  }
 }
 
 .card[href]:focus-visible {
   outline: 2px solid var(--portfolio-color-text-accent);
   outline-offset: 6px;
   border-radius: var(--portfolio-radius-card);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card[href],
+  .image,
+  .content h2,
+  .meta,
+  .year {
+    transition: none;
+  }
+
+  .card[href]:hover,
+  .card[href]:hover .image {
+    transform: none;
+  }
 }

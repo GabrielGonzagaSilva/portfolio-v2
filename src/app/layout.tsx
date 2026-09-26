@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Instrument_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "@/styles/tokens.css";
+import { PortfolioNavigationShell } from "@/components/navigation/portfolio-navigation-shell";
 import { siteConfig } from "@/lib/site";
 
 const instrumentSans = Instrument_Sans({
@@ -51,7 +52,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       lang="pt-BR"
       className={`${instrumentSans.variable} ${ibmPlexMono.variable} ${inter.variable} ${jetBrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <PortfolioNavigationShell>{children}</PortfolioNavigationShell>
+      </body>
     </html>
   );
 }

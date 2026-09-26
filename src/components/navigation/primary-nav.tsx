@@ -1,21 +1,38 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import styles from "./primary-nav.module.css";
 
 type PrimaryNavProps = {
-  active?: "work" | "about";
+  active?: "home" | "work" | "about";
   variant?: "default" | "case";
 };
 
 const navItems = [
-  { key: "work", label: "Work", href: "/" },
+  { key: "home", label: "Home", href: "/" },
+  { key: "work", label: "Work", href: "/#work" },
   { key: "about", label: "About", href: "/about" },
 ] as const;
 
 export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
   const isCase = variant === "case";
 
+  useEffect(() => {
+    const updateScrollState = () => setIsScrolled(window.scrollY > 16);
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
+
   return (
-    <header className={`${styles.header} ${isCase ? styles.caseHeader : ""}`}>
+    <header
+      className={`${styles.header} ${isCase ? styles.caseHeader : ""} ${isScrolled ? styles.scrolled : ""}`}
+      data-scrolled={isScrolled ? "true" : "false"}
+    >
       <nav
         className={`${styles.nav} ${isCase ? styles.caseNav : ""}`}
         aria-label="Navegação principal"

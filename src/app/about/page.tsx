@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Sobre Gabriel Gonzaga, Product Designer e UX/UI em São Paulo.",
 };
 
-const portrait = "https://www.figma.com/api/mcp/asset/4b475c29-1e64-40fb-8b58-2601dadd50cd/ae663.png";
+const portrait = "/images/about/portrait.png";
 
 const experience = [
   {

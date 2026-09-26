@@ -12,7 +12,7 @@
   height: 340px;
   overflow: hidden;
   border-radius: var(--portfolio-radius-card);
-  background: var(--portfolio-color-placeholder);
+  background: var(--portfolio-color-background-page);
 }
 
 .placeholder {
@@ -20,7 +20,8 @@
 }
 
 .image {
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .content {

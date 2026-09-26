@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styles from "./primary-nav.module.css";
 
+type NavKey = "home" | "work" | "about";
+
 type PrimaryNavProps = {
-  active?: "home" | "work" | "about";
+  active?: NavKey;
   variant?: "default" | "case";
 };
 
@@ -14,6 +16,8 @@ type IndicatorState = {
   width: number;
   visible: boolean;
 };
+
+let persistedActive: NavKey | undefined;
 
 const navItems = [
   { key: "home", label: "Home", href: "/" },
@@ -28,6 +32,8 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
   const [indicatorReady, setIndicatorReady] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const mountedRef = useRef(false);
+  const frameRef = useRef<number[]>([]);
   const isCase = variant === "case";
   const effectiveActive = active === "home" ? homeSection : active;
 
@@ -68,38 +74,89 @@ export function PrimaryNav({ active, variant = "default" }: PrimaryNavProps) {
     };
   }, [active]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const nav = navRef.current;
-    if (!nav || !effectiveActive) {
+    if (!nav || !active) {
       setIndicator((current) => ({ ...current, visible: false }));
       return;
     }
 
-    const syncIndicator = () => {
-      const activeItem = itemRefs.current[effectiveActive];
-      if (!activeItem) return;
+    frameRef.current.forEach((frame) => window.cancelAnimationFrame(frame));
+    frameRef.current = [];
 
-      setIndicator({
-        x: activeItem.offsetLeft,
-        width: activeItem.offsetWidth,
-        visible: true,
-      });
+    const resolveHomeTarget = (): NavKey => {
+      if (active !== "home") return active;
+
+      const workSection = document.getElementById("work");
+      if (!workSection) return "home";
+
+      const activationLine = Math.min(window.innerHeight * 0.4, 320);
+      const workTop = workSection.getBoundingClientRect().top;
+      const shouldBeWork = window.location.hash === "#work" || workTop <= activationLine;
+
+      if (homeSection !== (shouldBeWork ? "work" : "home")) {
+        setHomeSection(shouldBeWork ? "work" : "home");
+      }
+
+      return shouldBeWork ? "work" : "home";
     };
 
-    syncIndicator();
+    const targetKey = resolveHomeTarget();
+    const targetItem = itemRefs.current[targetKey];
+    if (!targetItem) return;
 
-    const resizeObserver = new ResizeObserver(syncIndicator);
-    resizeObserver.observe(nav);
-
-    const readyFrame = window.requestAnimationFrame(() => {
-      setIndicatorReady(true);
+    const geometryFor = (item: HTMLAnchorElement): IndicatorState => ({
+      x: item.offsetLeft,
+      width: item.offsetWidth,
+      visible: true,
     });
 
+    const targetGeometry = geometryFor(targetItem);
+    const previousKey = persistedActive;
+    const previousItem = previousKey ? itemRefs.current[previousKey] : null;
+
+    if (!mountedRef.current) {
+      setIndicatorReady(false);
+
+      if (previousItem && previousKey !== targetKey) {
+        setIndicator(geometryFor(previousItem));
+
+        const firstFrame = window.requestAnimationFrame(() => {
+          const secondFrame = window.requestAnimationFrame(() => {
+            setIndicatorReady(true);
+            setIndicator(targetGeometry);
+          });
+          frameRef.current.push(secondFrame);
+        });
+        frameRef.current.push(firstFrame);
+      } else {
+        setIndicator(targetGeometry);
+        const readyFrame = window.requestAnimationFrame(() => {
+          setIndicatorReady(true);
+        });
+        frameRef.current.push(readyFrame);
+      }
+
+      mountedRef.current = true;
+    } else {
+      setIndicator(targetGeometry);
+    }
+
+    persistedActive = targetKey;
+
+    const resizeObserver = new ResizeObserver(() => {
+      const currentTarget = itemRefs.current[targetKey];
+      if (!currentTarget) return;
+      setIndicator(geometryFor(currentTarget));
+    });
+    resizeObserver.observe(nav);
+
     return () => {
-      window.cancelAnimationFrame(readyFrame);
+      frameRef.current.forEach((frame) => window.cancelAnimationFrame(frame));
+      frameRef.current = [];
       resizeObserver.disconnect();
     };
-  }, [effectiveActive]);
+  }, [active, effectiveActive, homeSection]);
 
   return (
     <header

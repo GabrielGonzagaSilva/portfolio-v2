@@ -1,0 +1,120 @@
+name: About asset and visual QA
+
+on:
+  push:
+    branches:
+      - feat/figma-scalable-foundation
+    paths:
+      - .github/workflows/about-asset-qa.yml
+
+permissions:
+  contents: write
+
+jobs:
+  qa:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/figma-scalable-foundation
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Version About portrait and switch code to local asset
+        shell: bash
+        run: |
+          mkdir -p public/images/about
+          curl -L --fail --retry 3 --retry-delay 2 \
+            'https://www.figma.com/api/mcp/asset/4b475c29-1e64-40fb-8b58-2601dadd50cd/ae663.png' \
+            -o public/images/about/portrait.png
+          test -s public/images/about/portrait.png
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('src/app/about/page.tsx')
+          text = p.read_text()
+          old = 'const portrait = "https://www.figma.com/api/mcp/asset/4b475c29-1e64-40fb-8b58-2601dadd50cd/ae663.png";'
+          new = 'const portrait = "/images/about/portrait.png";'
+          if old not in text and new not in text:
+              raise SystemExit('Portrait asset line not found')
+          p.write_text(text.replace(old, new))
+          PY
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        shell: bash
+        run: |
+          nohup npm start -- -p 3000 > /tmp/about-next.log 2>&1 &
+          for i in {1..40}; do
+            if curl -fsS http://127.0.0.1:3000/about >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/about-next.log
+          exit 1
+
+      - name: Download Figma reference screenshots
+        shell: bash
+        run: |
+          mkdir -p qa-about/figma qa-about/web
+          curl -L --fail 'https://www.figma.com/api/mcp/asset/dd648989-9fee-4af8-b272-ddd646861e13.png' -o qa-about/figma/about-1440.png
+          curl -L --fail 'https://www.figma.com/api/mcp/asset/a9b2413b-9b0b-4681-8d75-5456b844dfd5.png' -o qa-about/figma/about-834.png
+          curl -L --fail 'https://www.figma.com/api/mcp/asset/ead4b5e0-d275-40c0-8d99-4fffcca4ecb4.png' -o qa-about/figma/about-390.png
+
+      - name: Capture web screenshots
+        shell: bash
+        run: |
+          node <<'NODE'
+          const { chromium } = require('@playwright/test');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            for (const width of [1440, 834, 390]) {
+              const context = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
+              const page = await context.newPage();
+              await page.goto('http://127.0.0.1:3000/about', { waitUntil: 'networkidle' });
+              await page.evaluate(() => document.fonts.ready);
+              await page.screenshot({ path: `qa-about/web/about-${width}.png`, fullPage: true });
+              await context.close();
+            }
+            await browser.close();
+          })().catch((error) => { console.error(error); process.exit(1); });
+          NODE
+          cp /tmp/about-next.log qa-about/server.log
+
+      - name: Upload QA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: about-visual-qa
+          path: qa-about
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Commit local About asset
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/images/about/portrait.png src/app/about/page.tsx
+          if git diff --cached --quiet; then
+            echo 'No asset changes to commit.'
+            exit 0
+          fi
+          git commit -m 'chore(portfolio): version About portrait asset'
+          git push origin HEAD:feat/figma-scalable-foundation

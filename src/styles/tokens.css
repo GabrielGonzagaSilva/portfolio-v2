@@ -8,6 +8,7 @@
   --portfolio-color-text-inverse: #ffffff;
   --portfolio-color-interactive-active: #2b3242;
   --portfolio-color-border-default: #e8edf2;
+  --portfolio-color-border-strong: #2b3242;
   --portfolio-color-placeholder: #e8edf2;
 
   --portfolio-radius-card: 20px;
@@ -16,7 +17,9 @@
   --portfolio-space-6: 6px;
   --portfolio-space-16: 16px;
   --portfolio-space-24: 24px;
+  --portfolio-space-32: 32px;
   --portfolio-space-40: 40px;
+  --portfolio-space-48: 48px;
   --portfolio-space-64: 64px;
   --portfolio-space-72: 72px;
   --portfolio-space-96: 96px;

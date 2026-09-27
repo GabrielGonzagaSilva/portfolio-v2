@@ -24,6 +24,7 @@ export const projects: ProjectSummary[] = [
     title: "Roteiro do Sul · Design System",
     category: "UX / UI design",
     year: "2026",
+    href: "/projects/roteiro-do-sul",
     image: "/images/projects/roteiro-do-sul/home-card.png",
     imageAlt: "Preview do projeto Roteiro do Sul",
   },

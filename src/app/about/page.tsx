@@ -166,21 +166,27 @@ export default function AboutPage() {
 
         <section className={styles.section} aria-labelledby="contact-label">
           <div className={styles.contactRow}>
-            <p id="contact-label" className={styles.sectionLabel}>
+            <p id="contact-label" className={`${styles.sectionLabel} ${styles.contactLabel}`}>
               CONTATO
             </p>
-            <div className={styles.contactLinks}>
-              <a
-                className={styles.contactLink}
-                href="https://www.linkedin.com/in/gabrielgonzagasilva"
-                target="_blank"
-                rel="noreferrer"
-              >
-                linkedin.com/in/gabrielgonzagasilva ↗
-              </a>
-              <a className={styles.contactLink} href="mailto:gabrielgonzagasilva@outlook.com">
-                gabrielgonzagasilva@outlook.com ↗
-              </a>
+            <div className={styles.contactContent}>
+              <p className={styles.contactTitle}>Vamos bater um papo?</p>
+              <p className={styles.contactCopy}>
+                Se quiser trocar uma ideia sobre produto, design ou oportunidades, pode me chamar por e-mail ou LinkedIn.
+              </p>
+              <div className={styles.contactLinks}>
+                <a className={styles.contactLink} href="mailto:gabrielgonzagasilva@outlook.com">
+                  gabrielgonzagasilva@outlook.com ↗
+                </a>
+                <a
+                  className={styles.contactLink}
+                  href="https://www.linkedin.com/in/gabrielgonzagasilva"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  LinkedIn ↗
+                </a>
+              </div>
             </div>
           </div>
         </section>

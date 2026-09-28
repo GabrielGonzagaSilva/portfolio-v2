@@ -14,50 +14,50 @@ const experience = [
   {
     company: "CRESCIMENTUM",
     date: "Mai. 2026 até o momento · São Paulo, SP",
-    role: "Design, Inovação, IA, LXD e Product Design",
+    role: "Inovação · Product Design, IA e LXD",
     description:
-      "Atuo no time de Inovação em projetos de produtos digitais, IA, aprendizagem corporativa e melhoria de processos. Também participo de pesquisas, organização de fluxos e documentação, avaliação de ferramentas de IA, construção de prompts e desenvolvimento de experiências digitais.",
+      "No time de Inovação, trabalho em projetos de produtos digitais, IA e aprendizagem corporativa. Minha rotina passa por pesquisa, fluxos, documentação, avaliação de ferramentas, construção de prompts e prototipação de experiências digitais.",
   },
   {
     company: "AUREUM",
     date: "Jan. 2026 até o momento · São Paulo, SP",
     role: "Co-Founder & Product Lead",
     description:
-      "Atuo na estratégia e evolução de produtos digitais, conectando necessidades de negócio e usuários. Meu trabalho passa por Product Strategy, Product Design, UX/UI, identificação de oportunidades, prototipação, validação e melhoria contínua.",
+      "Como cofundador e responsável por produto, acompanho desde a definição do problema até a prototipação e a evolução das soluções. Trabalho com estratégia, UX/UI, validação e priorização, conectando necessidades de uso e de negócio.",
   },
   {
     company: "TP",
     date: "Jan. 2024 a Jan. 2025 · São Paulo, SP",
     role: "Microsoft Technical Support | Copilot, Microsoft 365 e Windows",
     description:
-      "Atuei com suporte técnico a usuários de produtos Microsoft, investigando problemas, orientando soluções e transformando informações técnicas em instruções mais claras. Foi uma experiência importante para desenvolver resolução de problemas, comunicação e olhar para a experiência do cliente.",
+      "Atendi usuários de produtos Microsoft e investiguei problemas que muitas vezes chegavam pouco claros. O trabalho me ensinou a diagnosticar melhor, explicar soluções sem jargão e olhar para a experiência do usuário também fora da interface.",
   },
   {
     company: "DESIGNER AUTÔNOMO E FREELANCER",
     date: "2020 até o momento · São Paulo, SP",
     role: "Design gráfico e comunicação visual",
     description:
-      "Desenvolvo projetos de identidade, materiais gráficos e comunicação digital. Também cuido de demandas, prazos e relacionamento com clientes, transformando necessidades em soluções visuais claras e consistentes.",
+      "Desenvolvo identidades, materiais gráficos e peças digitais para clientes. Além de desenhar, organizo escopo, prazos e alinhamentos — uma prática que me ensinou bastante sobre ouvir, traduzir pedidos e tomar decisões com restrições reais.",
   },
 ] as const;
 
 const education = [
   {
     title: "DESIGN GRÁFICO",
-    description: "UNICID / Graduação em andamento.",
+    description: "UNICID / Graduação em andamento, com estudos de linguagem visual, projeto e fundamentos de design.",
   },
   {
     title: "CRIAÇÃO PUBLICITÁRIA E DIREÇÃO DE ARTE",
-    description: "Escola CUCA / Formação voltada à direção de arte, conceito e construção visual.",
+    description: "Escola CUCA / Formação em direção de arte, conceito e construção visual.",
   },
   {
     title: "PRODUCT DESIGN",
     description:
-      "Mergo / Formação focada no processo de criação de produtos digitais, da pesquisa e definição do problema à prototipação, interface e visão de negócio.",
+      "Mergo / Formação em Product Design, passando por pesquisa, definição de problema, prototipação, interface e visão de produto.",
   },
   {
     title: "DESIGN DIGITAL",
-    description: "SAGA / Minha base inicial em ferramentas e fundamentos de design digital.",
+    description: "SAGA / Foi onde construí minha base inicial em ferramentas e fundamentos de design digital.",
   },
 ] as const;
 
@@ -67,45 +67,42 @@ export default function AboutPage() {
       <PrimaryNav active="about" />
 
       <section className={styles.hero} aria-labelledby="about-title">
-        <div className={styles.heroContent}>
+        <div className={styles.heroEditorial}>
+          <p className={styles.heroLabel}>GABRIEL GONZAGA / PRODUCT DESIGN</p>
           <h1 id="about-title" className={styles.heroTitle}>
-            Sou Gabriel Gonzaga, Product Designer e UX/UI em São Paulo. Trabalho criando produtos digitais e organizando
-            problemas complexos até eles ficarem mais simples de entender e usar.
+            Me chamo Gabriel Gonzaga e transformo problemas em produtos mais claros e fáceis de usar.
           </h1>
           <p className={styles.heroIntro}>
-            No dia a dia, transito entre pesquisa, fluxos, UX/UI e prototipação, além de explorar aprendizagem, inovação e IA
-            como parte do processo.
+            No dia a dia, transito entre pesquisa, fluxos, UX/UI, prototipação e IA aplicada com critério.
           </p>
+          <p className={styles.heroMeta}>SÃO PAULO · PRODUCT DESIGN · UX/UI · IA</p>
         </div>
+        <img className={styles.heroPortrait} src={portrait} alt="Retrato de Gabriel Gonzaga" />
       </section>
 
       <div className={styles.main}>
         <section className={styles.section} aria-labelledby="profile-label">
           <div className={styles.profileRow}>
-            <div className={styles.profileSidebar}>
-              <p id="profile-label" className={styles.profileLabel}>
-                QUEM EU SOU
-              </p>
-              <img className={styles.portrait} src={portrait} alt="Retrato de Gabriel Gonzaga" />
-            </div>
+            <p id="profile-label" className={styles.profileLabel}>
+              QUEM EU SOU
+            </p>
             <div className={styles.profileCopy}>
               <p className={styles.emphasis}>
-                Comecei no design visual e no trabalho autoral. Passei por design digital, direção de arte e atendimento a
-                clientes antes de direcionar minha carreira para produto.
+                Entrei no design pela parte visual. Trabalhei com projetos autorais, direção de arte, comunicação digital e
+                clientes antes de migrar para produto.
               </p>
               <p>
-                Foi nesse caminho que percebi que eu gostava tanto de entender o problema quanto de cuidar da parte visual.
-                Queria entender por que algo precisava existir, para quem e o que faria aquilo funcionar melhor. Foi esse
-                interesse que me aproximou de UX e, depois, de Product Design.
+                Com o tempo, percebi que o que mais me prendia não era só a interface pronta. Eu queria entender por que aquilo
+                precisava existir, onde estava o problema e o que faria a experiência funcionar melhor. Foi assim que fui me
+                aproximando de UX, Product Design e tecnologia.
               </p>
               <p>
-                Hoje faço parte do time de Inovação da Crescimentum, onde trabalho com projetos que passam por produtos
-                digitais, IA, aprendizagem e melhoria de processos. Também curso Design Gráfico na UNICID e sigo minha
-                formação em Product Design pela Mergo.
+                Hoje faço parte do time de Inovação da Crescimentum, em projetos que cruzam produtos digitais, IA, aprendizagem
+                e melhoria de processos. Em paralelo, curso Design Gráfico na UNICID e Product Design na Mergo.
               </p>
               <p className={styles.emphasis}>
-                Acabei trazendo um pouco de cada experiência para a forma como trabalho: atenção ao visual, curiosidade para
-                entender o problema e vontade de deixar as coisas mais claras e simples de usar.
+                Essa mistura ainda aparece no meu jeito de trabalhar: não separo lógica de acabamento visual e prefiro validar
+                antes de decidir.
               </p>
             </div>
           </div>
@@ -114,16 +111,14 @@ export default function AboutPage() {
         <section className={styles.section} aria-labelledby="principles-label">
           <div className={styles.centeredRow}>
             <p id="principles-label" className={`${styles.sectionLabel} ${styles.principlesLabel}`}>
-              COMO EU PENSO DESIGN
+              COMO EU TRABALHO
             </p>
             <div className={styles.principlesContent}>
-              <p className={styles.principlesTitle}>
-                Para mim, design não começa na interface. Começa tentando entender o que precisa ser resolvido, para quem e por
-                quê.
-              </p>
+              <p className={styles.principlesTitle}>Diagnóstico de experiência antes da interface.</p>
               <p className={styles.principlesCopy}>
-                A parte visual importa muito, mas funciona melhor quando existe uma lógica por trás. Por isso, tento sempre
-                equilibrar experiência de uso, necessidade do produto e qualidade de execução.
+                Meu processo começa na raiz do problema: entender quem está usando o produto, qual é o objetivo real e onde a
+                jornada atual quebra. Só depois de mapear esses atritos é que vou para o Figma estruturar os fluxos e protótipos,
+                ajustando os detalhes até a experiência rodar sem atrito e entregar o que o usuário precisa.
               </p>
             </div>
           </div>
@@ -132,7 +127,7 @@ export default function AboutPage() {
         <section className={styles.section} aria-labelledby="experience-label">
           <div className={styles.experienceRow}>
             <p id="experience-label" className={`${styles.sectionLabel} ${styles.experienceLabel}`}>
-              EXPERIÊNCIA PROFISSIONAL
+              EXPERIÊNCIA
             </p>
             <div className={styles.experienceList}>
               {experience.map((item) => (
@@ -156,7 +151,7 @@ export default function AboutPage() {
         <section className={styles.section} aria-labelledby="education-label">
           <div className={styles.educationRow}>
             <p id="education-label" className={styles.sectionLabel}>
-              FORMAÇÃO E REPERTÓRIO
+              FORMAÇÃO
             </p>
             <div className={styles.educationGrid}>
               {education.map((item) => (

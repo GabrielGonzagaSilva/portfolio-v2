@@ -6,6 +6,8 @@ import { projects } from "@/data/projects";
 import styles from "./home.module.css";
 
 export default function Home() {
+  const visibleProjects = projects.filter((project) => !project.placeholder);
+
   return (
     <main id="top" className={styles.page}>
       <PrimaryNav active="home" />
@@ -13,7 +15,7 @@ export default function Home() {
       <HomeHero />
 
       <section id="work" className={styles.work} aria-label="Projetos selecionados">
-        {projects.map((project) => (
+        {visibleProjects.map((project) => (
           <ProjectCard key={project.slug} project={project} />
         ))}
       </section>

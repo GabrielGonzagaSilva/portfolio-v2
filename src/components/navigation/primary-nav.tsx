@@ -186,12 +186,6 @@ function PrimaryNavRuntime({ active, variant = "default" }: Omit<PrimaryNavProps
             {item.label}
           </Link>
         ))}
-        <a
-          className={`${styles.item} ${isCase ? styles.caseItem : ""}`}
-          href="mailto:gabrielgonzagasilva@outlook.com"
-        >
-          Contact
-        </a>
       </nav>
     </header>
   );

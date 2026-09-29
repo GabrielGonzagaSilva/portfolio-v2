@@ -5,7 +5,6 @@ import "@/styles/tokens.css";
 import "@/styles/project-hero-layout.css";
 import "@/styles/project-hero-motion.css";
 import "@/styles/typography-wrap.css";
-import "@/styles/visual-rhythm.css";
 import { PortfolioNavigationShell } from "@/components/navigation/portfolio-navigation-shell";
 import { siteConfig } from "@/lib/site";
 
@@ -56,7 +55,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       lang="pt-BR"
       className={`${instrumentSans.variable} ${ibmPlexMono.variable} ${inter.variable} ${jetBrainsMono.variable}`}
     >
-      <body className="portfolio-density">
+      <body>
         <PortfolioNavigationShell>{children}</PortfolioNavigationShell>
       </body>
     </html>

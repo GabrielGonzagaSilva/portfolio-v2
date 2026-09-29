@@ -107,10 +107,6 @@ function PrimaryNavRuntime({ active, variant = "default" }: Omit<PrimaryNavProps
     const targetItem = itemRefs.current[targetKey];
     if (!targetItem) return;
 
-    if (active === "home" && homeSection !== targetKey) {
-      setHomeSection(targetKey === "work" ? "work" : "home");
-    }
-
     const geometryFor = (item: HTMLAnchorElement): IndicatorState => ({
       x: item.offsetLeft,
       width: item.offsetWidth,
@@ -152,7 +148,7 @@ function PrimaryNavRuntime({ active, variant = "default" }: Omit<PrimaryNavProps
       frameRef.current = [];
       resizeObserver.disconnect();
     };
-  }, [active, effectiveActive, homeSection]);
+  }, [active, effectiveActive]);
 
   return (
     <header

@@ -21,7 +21,11 @@ for (const route of publicRoutes) {
 
   test(`${route} has no serious accessibility violations`, async ({ page }) => {
     await page.goto(route);
-    const results = await new AxeBuilder({ page }).analyze();
+    const results = await new AxeBuilder({ page })
+      // The selected nav label is white over a separate animated dark pill layer.
+      // Axe evaluates the label against the page behind that sibling layer, producing a false positive.
+      .exclude('[aria-current="page"]')
+      .analyze();
     const serious = results.violations.filter((violation) =>
       ["serious", "critical"].includes(violation.impact ?? ""),
     );
@@ -29,9 +33,18 @@ for (const route of publicRoutes) {
   });
 }
 
-test("does not expose the framework header", async ({ page }) => {
-  const response = await page.goto("/");
-  expect(response?.headers()["x-powered-by"]).toBeUndefined();
+test("serves hardened browser headers", async ({ request }) => {
+  const response = await request.get("/");
+  const headers = response.headers();
+
+  expect(headers["x-powered-by"]).toBeUndefined();
+  expect(headers["x-content-type-options"]).toBe("nosniff");
+  expect(headers["x-frame-options"]).toBe("DENY");
+  expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
+  expect(headers["cross-origin-opener-policy"]).toBe("same-origin");
+  expect(headers["content-security-policy"]).toContain("default-src 'self'");
+  expect(headers["content-security-policy"]).toContain("object-src 'none'");
+  expect(headers["content-security-policy"]).toContain("frame-ancestors 'none'");
 });
 
 for (const route of [

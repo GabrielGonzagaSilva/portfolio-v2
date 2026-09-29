@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 const PUBLIC_BLOCK_HEADERS = {
   "Cache-Control": "private, no-store, max-age=0",
@@ -7,7 +7,7 @@ const PUBLIC_BLOCK_HEADERS = {
   "X-Robots-Tag": "noindex, nofollow, noarchive",
 };
 
-export function proxy(_request: NextRequest) {
+export function proxy() {
   const isProduction = process.env.VERCEL_ENV === "production";
   const internalToolsEnabled =
     process.env.ENABLE_INTERNAL_TOOLS === "1" && !isProduction;

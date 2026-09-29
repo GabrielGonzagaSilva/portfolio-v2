@@ -37,6 +37,9 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
   reactStrictMode: true,
   poweredByHeader: false,
+  images: {
+    qualities: [75, 95],
+  },
   async headers() {
     if (process.env.NODE_ENV !== "production") return [];
 

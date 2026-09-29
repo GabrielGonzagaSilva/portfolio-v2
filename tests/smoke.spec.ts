@@ -33,6 +33,34 @@ for (const route of publicRoutes) {
   });
 }
 
+test("home project previews request high quality optimized images", async ({ page }) => {
+  await page.goto("/");
+  const image = page.locator('a[aria-label^="Abrir projeto"] img').first();
+  await expect(image).toBeVisible();
+  await expect(image).toHaveAttribute("srcset", /q=95/);
+});
+
+for (const route of ["/projects/quantolab", "/projects/roteiro-do-sul"]) {
+  test(`${route} expands project images and returns to the case`, async ({ page }) => {
+    await page.goto(route);
+
+    const image = page.locator("main img").first();
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute("role", "button");
+    await expect(image).toHaveAttribute("aria-haspopup", "dialog");
+
+    await image.click();
+
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator("img")).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(image).toBeFocused();
+  });
+}
+
 test("serves hardened browser headers", async ({ request }) => {
   const response = await request.get("/");
   const headers = response.headers();

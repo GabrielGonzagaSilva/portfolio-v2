@@ -40,12 +40,28 @@ export const metadata: Metadata = {
     template: `%s — ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  metadataBase: new URL("https://portfolio-v2.vercel.app"),
+  metadataBase: new URL("https://gabrielgonzaga.com.br"),
   openGraph: {
     title: siteConfig.title,
     description: siteConfig.description,
     type: "website",
     locale: "pt_BR",
+    url: "/",
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: "/images/share/home-linkedin.png",
+        width: 1200,
+        height: 630,
+        alt: "Gabriel Gonzaga — Product Designer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: ["/images/share/home-linkedin.png"],
   },
 };
 

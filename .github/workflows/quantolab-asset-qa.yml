@@ -93,7 +93,7 @@ jobs:
           cp /tmp/quantolab-next.log qa-quantolab/server.log
 
       - name: Upload QA artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: quantolab-visual-qa
           path: qa-quantolab

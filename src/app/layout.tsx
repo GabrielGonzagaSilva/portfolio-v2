@@ -4,6 +4,7 @@ import "./globals.css";
 import "@/styles/tokens.css";
 import "@/styles/project-hero-layout.css";
 import "@/styles/project-hero-motion.css";
+import "@/styles/typography-wrap.css";
 import { PortfolioNavigationShell } from "@/components/navigation/portfolio-navigation-shell";
 import { siteConfig } from "@/lib/site";
 

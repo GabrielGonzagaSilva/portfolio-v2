@@ -1,0 +1,23 @@
+/* Global text-wrapping guardrails for the public portfolio.
+   Headings are balanced to avoid isolated articles/conjunctions at line ends,
+   while body copy uses the browser's higher-quality line-breaking strategy. */
+
+:where(h1, h2, h3, h4, h5, h6) {
+  text-wrap: balance;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+:where(p, li, blockquote, figcaption, dd, dt) {
+  text-wrap: pretty;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+}
+
+/* Keep intentional labels, metadata and controls on a single line when they fit.
+   Individual responsive components can still override this when wrapping is required. */
+:where(nav, button) {
+  text-wrap: nowrap;
+}

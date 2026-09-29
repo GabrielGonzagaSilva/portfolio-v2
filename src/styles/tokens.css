@@ -30,7 +30,7 @@
   --portfolio-grid-columns: 12;
   --portfolio-grid-margin: 120px;
   --portfolio-grid-gutter: 40px;
-  --portfolio-section-gap: 96px;
+  --portfolio-section-gap: 80px;
   --portfolio-header-padding-y: 16px;
 
   --portfolio-font-sans: var(--font-figma-sans), Arial, sans-serif;
@@ -41,7 +41,7 @@
   :root {
     --portfolio-grid-margin: 40px;
     --portfolio-grid-gutter: 24px;
-    --portfolio-section-gap: 72px;
+    --portfolio-section-gap: 64px;
   }
 }
 
@@ -49,6 +49,6 @@
   :root {
     --portfolio-grid-margin: 24px;
     --portfolio-grid-gutter: 24px;
-    --portfolio-section-gap: 64px;
+    --portfolio-section-gap: 48px;
   }
 }

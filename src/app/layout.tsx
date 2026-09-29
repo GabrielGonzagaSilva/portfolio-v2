@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     images: [
       {
-        url: "/og-image",
+        url: "/og-home-figma.png",
         width: 1200,
         height: 630,
         alt: "Gabriel Gonzaga — Product Designer",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
-    images: ["/og-image"],
+    images: ["/og-home-figma.png"],
   },
 };
 

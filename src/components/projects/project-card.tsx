@@ -17,6 +17,7 @@ function ProjectCardContent({ project }: ProjectCardProps) {
             alt={project.imageAlt ?? ""}
             fill
             sizes="(max-width: 600px) calc(100vw - 48px), (max-width: 1024px) calc((100vw - 104px) / 2), 580px"
+            quality={95}
             className={styles.image}
             priority={project.slug === "quantolab"}
           />

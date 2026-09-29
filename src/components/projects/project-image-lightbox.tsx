@@ -37,13 +37,11 @@ function getProjectImage(target: EventTarget | null) {
 }
 
 export function ProjectImageLightbox() {
-  const [mounted, setMounted] = useState(false);
   const [activeImage, setActiveImage] = useState<ActiveImage | null>(null);
   const triggerRef = useRef<HTMLImageElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
-    setMounted(true);
     document.body.classList.add("project-lightbox-enabled");
 
     const enhancedImages = Array.from(
@@ -148,7 +146,7 @@ export function ProjectImageLightbox() {
     };
   }, [activeImage]);
 
-  if (!mounted || !activeImage) return null;
+  if (!activeImage) return null;
 
   return createPortal(
     <div
@@ -170,6 +168,8 @@ export function ProjectImageLightbox() {
         ×
       </button>
       <figure className={styles.figure}>
+        {/* Expanded project images deliberately use the original source instead of the optimized thumbnail. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className={styles.image} src={activeImage.src} alt={activeImage.alt} />
       </figure>
     </div>,

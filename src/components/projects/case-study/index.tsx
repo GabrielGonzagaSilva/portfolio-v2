@@ -137,6 +137,11 @@ type ProjectNextCaseProps = {
   href?: string;
 };
 
+const fallbackNextCaseHrefByTitle: Record<string, string> = {
+  "Design System": "/projects/roteiro-do-sul",
+  "Próximo projeto": "/projects/quantolab",
+};
+
 export function ProjectNextCase({
   sectionClassName,
   containerClassName,
@@ -147,6 +152,7 @@ export function ProjectNextCase({
   dividerClassName,
   href,
 }: ProjectNextCaseProps) {
+  const resolvedHref = href ?? fallbackNextCaseHrefByTitle[title];
   const content = (
     <>
       <h2 className={titleClassName}>{title}</h2>
@@ -157,8 +163,8 @@ export function ProjectNextCase({
   return (
     <section className={sectionClassName} aria-label="Próximo projeto">
       <div className={containerClassName}>
-        {href ? (
-          <Link href={href} className={rowClassName}>{content}</Link>
+        {resolvedHref ? (
+          <Link href={resolvedHref} className={rowClassName}>{content}</Link>
         ) : (
           <div className={rowClassName}>{content}</div>
         )}
